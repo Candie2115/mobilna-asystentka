@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Klienta - Mobilna Asystentka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #0a0f18;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --accent-color: #3b82f6;
+            --text-main: #f8fafc;
+            --border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Motywy według pakietów */
+        body.pkg-P0 {
+            --accent-color: #94a3b8;
+            --accent-gradient: linear-gradient(135deg, #94a3b8, #64748b);
+            --bg-body: #0f172a;
+        }
+        body.pkg-P1,
+        body.pkg-P2,
+        body.pkg-P4 {
+            --accent-color: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
+            --bg-body: #020617;
+        }
+        body.pkg-P3L {
+            --accent-color: #c5a059;
+            --accent-gradient: linear-gradient(135deg, #c5a059, #d4af37);
+            --bg-body: #0c0a05;
+        }
+        body.pkg-P3F {
+            --accent-color: #ffffff;
+            --accent-gradient: linear-gradient(135deg, #c5a059, #ffffff, #c5a059);
+            --bg-body: #000000;
+            --card-bg: rgba(20, 20, 20, 0.98);
+            --border-color: rgba(197, 160, 89, 0.6);
+        }
+        body.pkg-START {
+            --accent-color: #22c55e;
+            --accent-gradient: linear-gradient(135deg, #22c55e, #16a34a);
+            --bg-body: #0c0a05;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .topbar {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .company-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .package-badge {
+            background: var(--accent-gradient);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000;
+        }
+
+        body.pkg-P3F .package-badge {
+            background: linear-gradient(135deg, #c5a059, #ffffff, #c5a059);
+            background-size: 200% auto;
+            animation: pulseShine 3s infinite linear;
+        }
+
+        @keyframes pulseShine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .welcome-section {
+            background: var(--accent-gradient);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            color: #000;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-5px);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: var(--accent-gradient);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .task-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input, textarea, select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .tasks-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .task-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: 0.3s;
+        }
+
+        .task-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-color);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .task-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .task-description {
+            color: #94a3b8;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .status-new {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .status-in_progress {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .status-completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .priority-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .priority-low {
+            background: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+        }
+
+        .priority-normal {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .priority-high {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .priority-urgent {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            transition: 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .feature-desc {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .premium-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #c5a059, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            font-size: 1.1rem;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid #22c55e;
+            color: #22c55e;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .alert-warning {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid #fbbf24;
+            color: #fbbf24;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .topbar {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div class="company-name" id="companyName">Ładowanie...</div>
+        <div class="package-badge" id="packageBadge">Pakiet</div>
+    </div>
+    <button class="logout-btn" onclick="handleLogout()">🚪 Wyloguj</button>
+</div>
+
+<div class="container">
+    <!-- Alert messages -->
+    <div id="alertContainer"></div>
+
+    <!-- Welcome section -->
+    <div class="welcome-section">
+        <h1 id="welcomeTitle">Witaj w Twoim Panelu!</h1>
+        <p id="welcomeDesc">Zarządzaj swoimi zleceniami i monitoruj wykorzystanie pakietu</p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-grid" id="statsGrid">
+        <!-- Dynamically loaded based on package -->
+    </div>
+
+    <!-- Package Features (only for P0, P3L, P3F) -->
+    <div class="section hidden" id="featuresSection">
+        <div class="section-title" id="featuresTitle">✨ Twoje możliwości</div>
+        <div id="featuresGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+            <!-- Features loaded dynamically -->
+        </div>
+    </div>
+
+    <!-- New Task Section -->
+    <div class="section" id="taskSection">
+        <div class="section-title">📝 Nowe Zlecenie</div>
+        <form class="task-form" onsubmit="handleCreateTask(event)">
+            <div class="form-group">
+                <label>Tytuł zlecenia *</label>
+                <input type="text" id="taskTitle" placeholder="Np. Wizyta w urzędzie skarbowym" required>
+            </div>
+            <div class="form-group">
+                <label>Szczegółowy opis</label>
+                <textarea id="taskDescription" placeholder="Opisz dokładnie co należy zrobić..."></textarea>
+            </div>
+            <div class="form-group" id="taskTypeGroup">
+                <label>Typ zlecenia</label>
+                <select id="taskType">
+                    <option value="remote">Zdalne</option>
+                    <option value="onsite">Terenowe (wizyta)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Priorytet</label>
+                <select id="taskPriority">
+                    <option value="low">Niski</option>
+                    <option value="normal" selected>Normalny</option>
+                    <option value="high">Wysoki</option>
+                    <option value="urgent" id="urgentOption">Pilne</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary" id="submitTaskBtn">✅ Wyślij Zlecenie</button>
+        </form>
+    </div>
+
+    <!-- Tasks List -->
+    <div class="section">
+        <div class="section-title">📋 Moje Zlecenia</div>
+        <div class="tasks-list" id="tasksList">
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <p>Ładowanie zleceń...</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let userData = null;
+    let userSubscription = null;
+
+    // Check authentication
+    function checkAuth() {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (!token || !user.id) {
+            window.location.href = 'login.html';
+            return false;
+        }
+
+        if (user.user_type === 'admin') {
+            window.location.href = 'admin.html';
+            return false;
+        }
+
+        userData = user;
+        return true;
+    }
+
+    // API helper
+    async function fetchAPI(url, options = {}) {
+        const token = localStorage.getItem('token');
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                ...options.headers
+            }
+        });
+
+        if (response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+            return null;
+        }
+
+        return response.json();
+    }
+
+    // Show alert
+    function showAlert(message, type = 'success') {
+        const container = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        container.appendChild(alert);
+        
+        setTimeout(() => {
+            alert.remove();
+        }, 5000);
+    }
+
+    // Load user data
+    async function loadUserData() {
+        try {
+            const clients = await fetchAPI('/api/clients');
+            const client = clients.find(c => c.id === userData.id);
+            
+            if (client) {
+                userSubscription = client;
+                
+                // Set theme
+                const packageType = client.package_name || client.package_type || 'P0';
+                document.body.className = `pkg-${packageType}`;
+                
+                // Update UI
+                document.getElementById('companyName').textContent = client.company_name;
+                document.getElementById('packageBadge').textContent = packageType;
+                
+                // Customize panel based on package
+                customizePanelForPackage(packageType, client);
+            }
+        } catch (error) {
+            console.error('Error loading user data:', error);
+            showAlert('Błąd ładowania danych użytkownika', 'error');
+        }
+    }
+
+    // Customize panel based on package type
+    function customizePanelForPackage(packageType, client) {
+        const statsGrid = document.getElementById('statsGrid');
+        const featuresSection = document.getElementById('featuresSection');
+        const taskTypeGroup = document.getElementById('taskTypeGroup');
+        const urgentOption = document.getElementById('urgentOption');
+        const welcomeTitle = document.getElementById('welcomeTitle');
+        const welcomeDesc = document.getElementById('welcomeDesc');
+
+        // Clear stats grid
+        statsGrid.innerHTML = '';
+
+        // P0: Wirtualny (tylko zdalne)
+        if (packageType === 'P0') {
+            welcomeTitle.textContent = '💻 Panel Wsparcia Zdalnego';
+            welcomeDesc.textContent = 'Zarządzaj dokumentacją, korespondencją i zadaniami online';
+            
+            // Stats for P0
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">Godziny Wsparcia</div>
+                    <div class="stat-value"><span id="hoursUsed">0</span>/<span id="hoursLimit">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="hoursProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Aktywne Zadania</div>
+                    <div class="stat-value" id="activeTasks">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Odnowienie Pakietu</div>
+                    <div class="stat-value" style="font-size: 1.2rem;" id="renewalDate">-</div>
+                </div>
+            `;
+
+            // Hide onsite task option
+            taskTypeGroup.classList.add('hidden');
+            urgentOption.disabled = true;
+
+            // Show features
+            featuresSection.classList.remove('hidden');
+            document.getElementById('featuresTitle').textContent = '💻 Wsparcie Zdalne Online';
+            document.getElementById('featuresGrid').innerHTML = `
+                <div class="feature-card">
+                    <div class="feature-icon">📧</div>
+                    <div class="feature-title">Korespondencja</div>
+                    <div class="feature-desc">Zarządzanie emailami i dokumentacją firmową</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <div class="feature-title">Kalendarz</div>
+                    <div class="feature-desc">Organizacja spotkań i terminów</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Research</div>
+                    <div class="feature-desc">Analizy rynkowe i badania 360°</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-title">Social Media</div>
+                    <div class="feature-desc">Obsługa mediów społecznościowych</div>
+                </div>
+            `;
+        }
+        // P1, P2, P4: Mobilny/Hybrydowy/Satelita
+        else if (['P1', 'P2', 'P4'].includes(packageType)) {
+            const titles = {
+                'P1': '🚗 Panel Wsparcia Mobilnego Start',
+                'P2': '📂 Panel Wsparcia Hybrydowego',
+                'P4': '🛰️ Panel Satelity Biznesu'
+            };
+            const descs = {
+                'P1': 'Wizyty terenowe + wsparcie zdalne',
+                'P2': 'Pełne wsparcie terenowe i administracyjne',
+                'P4': '2 dni wyłącznej dostępności w regionie'
+            };
+            
+            welcomeTitle.textContent = titles[packageType];
+            welcomeDesc.textContent = descs[packageType];
+            
+            // Full stats
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">Wizyty Terenowe</div>
+                    <div class="stat-value"><span id="visitsUsed">0</span>/<span id="visitsLimit">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="visitsProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Godziny Wsparcia</div>
+                    <div class="stat-value"><span id="hoursUsed">0</span>/<span id="hoursLimit">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="hoursProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Aktywne Zadania</div>
+                    <div class="stat-value" id="activeTasks">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Odnowienie Pakietu</div>
+                    <div class="stat-value" style="font-size: 1.2rem;" id="renewalDate">-</div>
+                </div>
+            `;
+
+            // Show task type selector
+            taskTypeGroup.classList.remove('hidden');
+            urgentOption.disabled = false;
+        }
+        // P3L: Premium Light
+        else if (packageType === 'P3L') {
+            welcomeTitle.textContent = '🏆 Panel Premium Light';
+            welcomeDesc.textContent = 'Kompleksowe wsparcie z nadzorem nad flotą i nieruchomościami';
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">Wizyty Terenowe</div>
+                    <div class="stat-value"><span id="visitsUsed">0</span>/<span id="visitsLimit">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="visitsProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Godziny Wsparcia</div>
+                    <div class="stat-value"><span id="hoursUsed">0</span>/<span id="hoursLimit">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="hoursProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Aktywne Zadania</div>
+                    <div class="stat-value" id="activeTasks">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Odnowienie Pakietu</div>
+                    <div class="stat-value" style="font-size: 1.2rem;" id="renewalDate">-</div>
+                </div>
+            `;
+
+            taskTypeGroup.classList.remove('hidden');
+            urgentOption.disabled = false;
+
+            featuresSection.classList.remove('hidden');
+            document.getElementById('featuresTitle').textContent = '🏆 Funkcje Premium Light';
+            document.getElementById('featuresGrid').innerHTML = `
+                <div class="feature-card">
+                    <div class="feature-icon">🚗</div>
+                    <div class="feature-title">Nadzór nad Flotą</div>
+                    <div class="feature-desc">Zarządzanie pojazdami firmowymi</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <div class="feature-title">Nieruchomości</div>
+                    <div class="feature-desc">Kompleksowa obsługa majątku</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-title">Administracja</div>
+                    <div class="feature-desc">Pełne wsparcie administracyjne</div>
+                </div>
+            `;
+        }
+        // P3F: Premium Full (VIP)
+        else if (packageType === 'P3F') {
+            welcomeTitle.innerHTML = '👑 Panel <span class="premium-badge">Premium Full VIP</span>';
+            welcomeDesc.textContent = 'Priorytetowa obsługa z pełnym zakresem usług i SLA do 2h';
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">Wizyty Terenowe</div>
+                    <div class="stat-value"><span id="visitsUsed">0</span>/<span id="visitsLimit">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="visitsProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Godziny Wsparcia</div>
+                    <div class="stat-value"><span id="hoursUsed">0</span>/<span id="hoursLimit">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="hoursProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Aktywne Zadania</div>
+                    <div class="stat-value" id="activeTasks">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">⚡ Priorytet VIP</div>
+                    <div class="stat-value" style="font-size: 1.3rem; color: #c5a059;">SLA 2h</div>
+                </div>
+            `;
+
+            taskTypeGroup.classList.remove('hidden');
+            urgentOption.disabled = false;
+
+            featuresSection.classList.remove('hidden');
+            document.getElementById('featuresTitle').innerHTML = '👑 <span class="premium-badge">Pakiet Kompletny VIP</span>';
+            document.getElementById('featuresGrid').innerHTML = `
+                <div class="feature-card">
+                    <div class="feature-icon">🚗</div>
+                    <div class="feature-title">Flota Unlimited</div>
+                    <div class="feature-desc">Zarządzanie flotą bez ograniczeń</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <div class="feature-title">Nadzór Majątku</div>
+                    <div class="feature-desc">Kompleksowa opieka nad nieruchomościami</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <div class="feature-title">Podwykonawcy</div>
+                    <div class="feature-desc">Zarządzanie współpracą zewnętrzną</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">SLA 2h</div>
+                    <div class="feature-desc">Priorytetowa reakcja na zgłoszenia</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Raporty VIP</div>
+                    <div class="feature-desc">Szczegółowe analizy i statystyki</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Dedykowany Asystent</div>
+                    <div class="feature-desc">Osobisty kontakt priorytetowy</div>
+                </div>
+            `;
+        }
+        // START: Dobry Start
+        else if (packageType === 'START') {
+            welcomeTitle.textContent = '⭐ Panel Dobry Start';
+            welcomeDesc.textContent = 'Preferencyjne warunki wdrożenia - Premium Full w cenie promocyjnej';
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">Wizyty Terenowe</div>
+                    <div class="stat-value"><span id="visitsUsed">0</span>/<span id="visitsLimit">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="visitsProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Godziny Wsparcia</div>
+                    <div class="stat-value"><span id="hoursUsed">0</span>/<span id="hoursLimit">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="hoursProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Aktywne Zadania</div>
+                    <div class="stat-value" id="activeTasks">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Odnowienie Pakietu</div>
+                    <div class="stat-value" style="font-size: 1.2rem;" id="renewalDate">-</div>
+                </div>
+            `;
+
+            taskTypeGroup.classList.remove('hidden');
+            urgentOption.disabled = false;
+        }
+
+        // Update stat values
+        if (document.getElementById('visitsUsed')) {
+            document.getElementById('visitsUsed').textContent = client.visits_used || 0;
+            document.getElementById('visitsLimit').textContent = client.visits_limit || 0;
+            const visitsPercent = client.visits_limit > 0 ? (client.visits_used / client.visits_limit * 100) : 0;
+            if (document.getElementById('visitsProgress')) {
+                document.getElementById('visitsProgress').style.width = visitsPercent + '%';
+            }
+        }
+
+        if (document.getElementById('hoursUsed')) {
+            document.getElementById('hoursUsed').textContent = client.hours_used || 0;
+            document.getElementById('hoursLimit').textContent = client.hours_limit || 0;
+            const hoursPercent = client.hours_limit > 0 ? (client.hours_used / client.hours_limit * 100) : 0;
+            if (document.getElementById('hoursProgress')) {
+                document.getElementById('hoursProgress').style.width = hoursPercent + '%';
+            }
+        }
+
+        if (client.renewal_date && document.getElementById('renewalDate')) {
+            const date = new Date(client.renewal_date);
+            document.getElementById('renewalDate').textContent = date.toLocaleDateString('pl-PL');
+        }
+    }
+
+    // Load tasks
+    async function loadTasks() {
+        try {
+            const tasks = await fetchAPI('/api/tasks');
+            const container = document.getElementById('tasksList');
+            
+            if (!tasks || tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>Nie masz jeszcze żadnych zleceń</p>
+                    </div>
+                `;
+                document.getElementById('activeTasks').textContent = '0';
+                return;
+            }
+
+            const activeTasks = tasks.filter(t => t.status !== 'completed' && t.status !== 'rejected').length;
+            document.getElementById('activeTasks').textContent = activeTasks;
+
+            container.innerHTML = tasks.map(task => {
+                const statusMap = {
+                    'new': 'Nowe',
+                    'in_progress': 'W trakcie',
+                    'completed': 'Zakończone',
+                    'rejected': 'Odrzucone'
+                };
+
+                const priorityMap = {
+                    'low': 'Niski',
+                    'normal': 'Normalny',
+                    'high': 'Wysoki',
+                    'urgent': 'Pilne'
+                };
+
+                const date = new Date(task.created_at);
+                
+                return `
+                    <div class="task-card">
+                        <div class="task-header">
+                            <div class="task-title">${task.title}</div>
+                            <span class="status-badge status-${task.status}">${statusMap[task.status] || task.status}</span>
+                        </div>
+                        ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+                        <div class="task-meta">
+                            <span class="priority-badge priority-${task.priority}">${priorityMap[task.priority] || task.priority}</span>
+                            <span style="color: #64748b;">📅 ${date.toLocaleDateString('pl-PL')} ${date.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+            showAlert('Błąd ładowania zleceń', 'error');
+        }
+    }
+
+    // Create task
+    async function handleCreateTask(event) {
+        event.preventDefault();
+        
+        const title = document.getElementById('taskTitle').value;
+        const description = document.getElementById('taskDescription').value;
+        const priority = document.getElementById('taskPriority').value;
+
+        try {
+            const result = await fetchAPI('/api/tasks', {
+                method: 'POST',
+                body: JSON.stringify({
+                    title,
+                    description,
+                    priority
+                })
+            });
+
+            if (result.error) {
+                showAlert(result.error, 'error');
+                return;
+            }
+
+            showAlert('✅ Zlecenie zostało wysłane!', 'success');
+            
+            // Clear form
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDescription').value = '';
+            document.getElementById('taskPriority').value = 'normal';
+            
+            // Reload tasks
+            await loadTasks();
+        } catch (error) {
+            console.error('Error creating task:', error);
+            showAlert('Błąd wysyłania zlecenia', 'error');
+        }
+    }
+
+    // Logout
+    function handleLogout() {
+        if (confirm('Czy na pewno chcesz się wylogować?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+    }
+
+    // Initialize
+    async function init() {
+        if (!checkAuth()) return;
+        
+        await loadUserData();
+        await loadTasks();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            loadUserData();
+            loadTasks();
+        }, 30000);
+    }
+
+    init();
+</script>
+
+</body>
+</html>

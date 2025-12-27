@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julia | Mobilna Asystentka od Zadań Specjalnych</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        :root {
+            --deep-navy: #0f172a;
+            --royal-blue: #2563eb;
+            --gold: #c5a059;
+            --glass-visible: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #f8fafc;
+            --emergency: #ef4444;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; padding: 0;
+            background-color: #05070a;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        #bg-canvas {
+            position: fixed; top: 0; left: 0; z-index: -1;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #05070a 100%);
+        }
+
+        header { 
+            padding: 160px 20px 60px; 
+            text-align: center; 
+            position: relative; 
+        }
+
+        .contact-bar {
+            position: absolute; top: 20px; width: 100%;
+            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
+            left: 0;
+        }
+        .login-btn {
+            position: absolute; top: 20px; right: 20px;
+            color: var(--gold); 
+            text-decoration: none; 
+            font-weight: 800; 
+            font-size: 0.9rem; 
+            padding: 10px 20px;
+            border: 2px solid var(--gold);
+            border-radius: 50px;
+            transition: 0.3s;
+            background: rgba(197, 160, 89, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 100;
+        }
+        .login-btn:hover { 
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 20px rgba(197, 160, 89, 0.5);
+            transform: scale(1.05);
+        }
+        .contact-bar a { 
+            color: var(--gold); 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            padding: 8px 15px;
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            transition: 0.3s;
+            background: rgba(197, 160, 89, 0.05);
+            white-space: nowrap;
+        }
+        .contact-bar a:hover { 
+            background: rgba(197, 160, 89, 0.15);
+            border-color: var(--gold);
+        }
+
+        h1 { 
+            font-size: 3.5rem; 
+            font-weight: 800; 
+            margin: 40px 0 20px; 
+            background: linear-gradient(to right, #fff, var(--gold)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            line-height: 1.1; 
+        }
+
+        .hero-desc { font-size: 1.2rem; color: #94a3b8; max-width: 900px; margin: 0 auto 40px; }
+
+        .trust-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 25px auto 0;
+            background: linear-gradient(90deg, #ef4444, #c5a059, #ef4444, #c5a059);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: trustShine 8s linear infinite;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes trustShine {
+            0% { background-position: 0% center; }
+            100% { background-position: 300% center; }
+        }
+
+        .container { max-width: 1300px; margin: auto; padding: 20px; }
+
+        .package-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+            gap: 25px; 
+            margin-bottom: 40px;
+        }
+
+        .promo-section { display: flex; justify-content: center; margin-bottom: 60px; }
+
+        .package-card { 
+            background: var(--glass-visible);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: 35px; border-radius: 24px;
+            display: flex; flex-direction: column;
+            transition: all 0.4s ease;
+        }
+
+        .package-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .package-card.premium { border: 2px solid var(--gold); }
+        .package-card.promo { border: 2px solid #22c55e; max-width: 500px; width: 100%; }
+
+        .package-card h3 { color: var(--gold); font-size: 1.4rem; margin-top: 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; }
+        .package-card ul { list-style: none; padding: 0; margin: 15px 0; flex-grow: 1; }
+        .package-card li { margin-bottom: 8px; color: #cbd5e1; font-size: 0.95rem; padding-left: 20px; position: relative; }
+        .package-card li::before { content: '✓'; position: absolute; left: 0; color: var(--gold); }
+
+        .price { 
+            font-size: 1.8rem; font-weight: 800; color: #fff; 
+            margin-top: 25px; text-align: center; border-top: 1px solid var(--glass-border); padding-top: 20px;
+        }
+
+        .emergency-banner {
+            background: rgba(239, 68, 68, 0.15);
+            padding: 30px; border-radius: 24px; margin: 40px auto;
+            border: 1px solid var(--emergency);
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+            max-width: 1000px;
+        }
+
+        .faq-section { margin: 80px 0; }
+        .faq-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .faq-item { background: var(--glass-visible); padding: 30px; border-radius: 20px; border: 1px solid var(--glass-border); }
+        .faq-item strong { color: var(--gold); display: block; margin-bottom: 10px; font-size: 1.1rem; }
+
+        .glass-form {
+            background: var(--glass-visible); border: 1px solid var(--glass-border);
+            padding: 50px; border-radius: 30px; margin: 80px auto; max-width: 800px;
+        }
+
+        input, textarea, select {
+            background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border);
+            color: #fff; padding: 15px; width: 100%; border-radius: 12px; margin-bottom: 20px; 
+            box-sizing: border-box; font-size: 1rem; font-family: inherit;
+        }
+
+        select option { background-color: #1e293b; color: #ffffff; }
+
+        .cta-btn {
+            background: linear-gradient(135deg, var(--gold) 0%, #a38641 100%);
+            color: #000; padding: 20px; border-radius: 12px; width: 100%;
+            font-weight: 800; border: none; cursor: pointer; transition: 0.3s; font-size: 1.1rem;
+        }
+        .cta-btn:hover { transform: scale(1.02); filter: brightness(1.1); box-shadow: 0 0 20px rgba(197, 160, 89, 0.4); }
+
+        footer { text-align: center; padding: 40px; color: #64748b; font-size: 0.8rem; border-top: 1px solid var(--glass-border); }
+
+        @media (max-width: 600px) {
+            header { padding-top: 180px; }
+            h1 { font-size: 2.2rem; }
+            .contact-bar { gap: 10px; }
+            .contact-bar a { font-size: 0.8rem; padding: 6px 10px; }
+            .login-btn { 
+                top: 70px; 
+                right: 50%; 
+                transform: translateX(50%); 
+                font-size: 0.8rem; 
+                padding: 8px 16px; 
+            }
+            .trust-text { font-size: 1rem; margin-top: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="bg-canvas"></div>
+
+<header>
+    <a href="login.html" class="login-btn">Zaloguj / Zarejestruj</a>
+    <div class="contact-bar">
+        <a href="tel:+48607692526">📞 +48 607 692 526</a>
+        <a href="mailto:julia.mobilnaasystentka@gmail.com?subject=Zapytanie o współpracę">✉️ Napisz do mnie</a>
+    </div>
+    <h1>Mobilna Asystentka od Zadań Specjalnych</h1>
+    <p class="hero-desc">Bolesławiec | Lubań | Lwówek | Zgorzelec | Wykroty – profesjonalne wsparcie operacyjne.</p>
+    <p class="trust-text">Zaufaj nam w kwestii swojego biznesu</p>
+</header>
+
+<div class="container">
+    <div class="package-grid">
+        <div class="package-card">
+            <h3>💻 P0: Wirtualny</h3>
+            <ul>
+                <li>Zarządzanie korespondencją i kalendarzem</li>
+                <li>Prowadzenie dokumentacji i rozliczeń</li>
+                <li>Research 360° oraz analizy rynkowe</li>
+                <li>Obsługa Social Media i newsletterów</li>
+            </ul>
+            <div class="price">950 PLN</div>
+        </div>
+        <div class="package-card">
+            <h3>🚗 P1: Mobilny Start</h3>
+            <ul>
+                <li>Zakres Pakietu P0</li>
+                <li>Logistyka lokalna i zakupy firmowe</li>
+                <li>Reprezentacja w urzędach i placówkach</li>
+                <li><strong>2 dedykowane wizyty terenowe</strong></li>
+            </ul>
+            <div class="price">1 300 PLN</div>
+        </div>
+        <div class="package-card">
+            <h3>📂 P2: Hybrydowy Spokój</h3>
+            <ul>
+                <li>Zakres Pakietu I</li>
+                <li>Cyfryzacja i archiwizacja dokumentacji</li>
+                <li>Wsparcie procesów HR (analiza CV)</li>
+                <li><strong>4 dedykowane wizyty terenowe</strong></li>
+            </ul>
+            <div class="price">2 800 PLN</div>
+        </div>
+        <div class="package-card premium">
+            <h3>🏆 P3: Premium Light</h3>
+            <ul>
+                <li>Nadzór nad flotą i nieruchomościami</li>
+                <li>Kompleksowe wsparcie administracyjne zdalne</li>
+                <li><strong>6 dedykowanych wizyt terenowe</strong></li>
+            </ul>
+            <div class="price">3 800 PLN</div>
+        </div>
+        <div class="package-card premium">
+            <h3>👑 P3: Premium Full</h3>
+            <ul>
+                <li>Zarządzanie flotą (bez ograniczeń ilościowych)</li>
+                <li>Nadzór nad mieniem i podwykonawcami</li>
+                <li>Priorytetowa obsługa (SLA do 2h)</li>
+                <li><strong>8 dedykowanych wizyt terenowe</strong></li>
+            </ul>
+            <div class="price">5 000 PLN</div>
+        </div>
+        <div class="package-card">
+            <h3>🛰️ P4: Satelita Biznesu</h3>
+            <ul>
+                <li>2 dni wyłącznej dostępności w regionie</li>
+                <li>Nadzór inwestycyjny i wizje lokalne</li>
+                <li>Obsługa logistyczna VIP</li>
+                <li>20h wsparcia administracyjnego zdalnego</li>
+            </ul>
+            <div class="price">3 200 PLN</div>
+        </div>
+    </div>
+
+    <div class="promo-section">
+        <div class="package-card promo">
+            <h3>⭐ Dobry Start</h3>
+            <p style="color: #cbd5e1; font-size: 0.95rem;">Preferencyjne warunki wdrożenia standardu Premium Full w pierwszym miesiącu współpracy.</p>
+            <div class="price" style="color: #22c55e;">3 200 PLN</div>
+        </div>
+    </div>
+
+    <div class="emergency-banner">
+        <div>
+            <h2 style="color: var(--emergency); margin: 0;">🚨 Moduł Emergency</h2>
+            <p style="margin: 5px 0 0; color: #cbd5e1;">Wsparcie doraźne w sytuacjach krytycznych i nieprzewidzianych.</p>
+        </div>
+        <div style="text-align: right; font-weight: 800; font-size: 1.5rem;">150 PLN <span style="font-size: 0.8rem; font-weight: 400; color: #94a3b8;">/ interwencja + 1,50 / km</span></div>
+    </div>
+
+    <section class="faq-section">
+        <h2 style="text-align: center; margin-bottom: 40px; font-size: 2.2rem; background: linear-gradient(to right, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Strefa Wątpliwości</h2>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <strong>Elastyczność zamiast etatu</strong>
+                <p>Omijasz wysokie koszty zatrudnienia, ZUS oraz płatne urlopy. Płacisz wyłącznie za realnie wykonane usługi w ramach wybranego pakietu.</p>
+            </div>
+            <div class="faq-item">
+                <strong>Bezpieczeństwo informacji</strong>
+                <p>Każda współpraca objęta jest umową poufności (NDA). Twoje dane firmowe i prywatne są chronione od pierwszego dnia.</p>
+            </div>
+            <div class="faq-item">
+                <strong>Gwarancja rzetelności</strong>
+                <p>Posiadam pełne ubezpieczenie zawodowe (OC), co zapewnia dodatkowe bezpieczeństwo finansowe dla Twoich projektów.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="glass-form" id="contact">
+        <h2 style="text-align: center; font-size: 2rem; margin-bottom: 30px; color: var(--gold);">Nawiążmy współpracę</h2>
+        <form id="contact-form">
+            <input type="text" name="name" placeholder="Imię i Nazwisko / Nazwa Firmy" required>
+            <input type="email" name="email" placeholder="Adres E-mail" required>
+            <select name="package" required>
+                <option value="" disabled selected>Wybierz interesujący Cię pakiet</option>
+                <option value="P0">P0: Wirtualne Wsparcie</option>
+                <option value="P1">P1: Mobilny Start</option>
+                <option value="P2">P2: Hybrydowy Spokój</option>
+                <option value="P3L">P3: Premium Light</option>
+                <option value="P3F">P3: Premium Full</option>
+                <option value="P4">P4: Satelita Biznesu</option>
+            </select>
+            <textarea name="message" rows="4" placeholder="Opisz zakres wsparcia..." required></textarea>
+            <button type="submit" id="submit-btn" class="cta-btn">PRZEŚLIJ ZAPYTANIE</button>
+            <p id="form-status" style="text-align: center; margin-top: 15px; display: none; font-weight: bold;"></p>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 Julia - Mobilna Asystentka. | <a href="tel:+48607692526" style="color:inherit; text-decoration:none;">+48 607 692 526</a></p>
+</footer>
+
+<script>
+    document.addEventListener('mousemove', (e) => {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        document.getElementById('bg-canvas').style.background = 
+            `radial-gradient(circle at ${x*100}% ${y*100}%, #1e293b 0%, #05070a 100%)`;
+    });
+
+    // EmailJS Configuration - SKONFIGUROWANE!
+    (function() {
+        emailjs.init("P3XOdzTRbZ963KUh_");
+    })();
+
+    var form = document.getElementById("contact-form");
+    async function handleSubmit(event) {
+      event.preventDefault();
+      var status = document.getElementById("form-status");
+      var btn = document.getElementById("submit-btn");
+      
+      btn.innerHTML = "WYSYŁANIE...";
+      btn.disabled = true;
+      
+      // Wyślij przez EmailJS
+      emailjs.sendForm('service_1d99cnl', 'template_qdryirw', form)
+        .then(function() {
+          status.innerHTML = "✅ Wysłano pomyślnie! Odpiszę wkrótce.";
+          status.style.color = "#22c55e";
+          status.style.display = "block";
+          form.reset();
+          setTimeout(() => {
+            btn.innerHTML = "PRZEŚLIJ ZAPYTANIE";
+            btn.disabled = false;
+            status.style.display = "none";
+          }, 5000);
+        }, function(error) {
+          status.innerHTML = "❌ Błąd wysyłki. Spróbuj ponownie.";
+          status.style.color = "#ef4444";
+          status.style.display = "block";
+          btn.innerHTML = "PRZEŚLIJ ZAPYTANIE";
+          btn.disabled = false;
+          console.error('EmailJS error:', error);
+        });
+    }
+    form.addEventListener("submit", handleSubmit)
+</script>
+
+</body>
+</html>

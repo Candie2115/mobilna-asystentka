@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administratora - M.A</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-gold: #c5a059;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, rgba(10, 10, 10, 0.95) 0%, rgba(0, 0, 0, 0.98) 100%);
+            border-right: 1px solid rgba(197, 160, 89, 0.2);
+            padding: 30px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--color-gold);
+            padding: 0 30px;
+            margin-bottom: 50px;
+        }
+
+        .nav-item {
+            padding: 18px 30px;
+            margin: 8px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item:hover {
+            background: rgba(197, 160, 89, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: rgba(197, 160, 89, 0.2);
+            border-left: 4px solid var(--color-gold);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, var(--color-gold) 0%, #fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--color-gold);
+            transform: translateY(-5px);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--color-gold);
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            color: var(--color-gold);
+            margin-bottom: 20px;
+        }
+
+        .client-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .client-card:hover {
+            border-color: var(--color-gold);
+            transform: translateX(5px);
+        }
+
+        .client-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .client-package {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .welcome-box {
+            background: linear-gradient(135deg, rgba(197, 160, 89, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+        }
+
+        .welcome-box h2 {
+            margin-bottom: 10px;
+        }
+
+        .welcome-box p {
+            color: #94a3b8;
+        }
+
+        .btn-primary {
+            background: var(--color-gold);
+            color: #000;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(197, 160, 89, 0.4);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #0a0a0a;
+            border: 1px solid var(--color-gold);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            color: var(--color-gold);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .counter-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .counter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .counter-btn:hover {
+            background: var(--color-gold);
+            color: #000;
+        }
+
+        .counter-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .task-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .task-card.emergency {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .task-meta {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .status-new { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .status-in_progress { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+        .status-completed { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .status-rejected { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--color-gold);
+            transition: width 0.3s;
+        }
+
+        .client-info {
+            flex: 1;
+        }
+
+        .client-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(197, 160, 89, 0.95);
+            color: #000;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.3s ease;
+            z-index: 10000;
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.95);
+            color: #fff;
+        }
+
+        .toast.success {
+            background: rgba(34, 197, 94, 0.95);
+            color: #fff;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(197, 160, 89, 0.3);
+            border-top-color: var(--color-gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .right-sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(10, 10, 10, 0.98) 0%, rgba(0, 0, 0, 1) 100%);
+            border-left: 1px solid rgba(197, 160, 89, 0.2);
+            transition: right 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+            padding: 30px 20px;
+        }
+
+        .right-sidebar.open {
+            right: 0;
+        }
+
+        .toggle-sidebar-btn {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--color-gold);
+            color: #000;
+            padding: 15px 8px;
+            border: none;
+            border-radius: 10px 0 0 10px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 1.2rem;
+            z-index: 1000;
+            transition: 0.3s;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+
+        .toggle-sidebar-btn:hover {
+            padding-right: 12px;
+            box-shadow: -5px 0 20px rgba(197, 160, 89, 0.4);
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            color: var(--color-gold);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .sidebar-item:hover {
+            border-color: var(--color-gold);
+            transform: translateX(-5px);
+        }
+
+        .sidebar-item-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-item-meta {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        .badge-count {
+            background: rgba(197, 160, 89, 0.2);
+            color: var(--color-gold);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 10px;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .restore-btn {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .restore-btn:hover {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .archive-year {
+            background: rgba(197, 160, 89, 0.1);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .archive-year:hover {
+            background: rgba(197, 160, 89, 0.2);
+            transform: translateX(-3px);
+        }
+
+        .archive-year-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .archive-month {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--color-gold);
+            padding: 12px;
+            margin: 8px 0 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .archive-month:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .archive-client {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid #64748b;
+            padding: 10px;
+            margin: 6px 0 6px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .archive-client:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-left-color: var(--color-gold);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible-content.open {
+            max-height: 2000px;
+        }
+
+        .chevron {
+            transition: transform 0.3s;
+        }
+
+        .chevron.open {
+            transform: rotate(180deg);
+        }
+
+        .archive-detail {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            margin: 10px 0 10px 45px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            color: var(--color-gold);
+            font-weight: 700;
+        }
+
+        @media (max-width: 1024px) {
+            .right-sidebar {
+                width: 320px;
+                right: -320px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .right-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .toggle-sidebar-btn {
+                font-size: 1rem;
+                padding: 12px 6px;
+            }
+        }
+
+        .pulse-notification {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(197, 160, 89, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 20px 10px rgba(197, 160, 89, 0);
+            }
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 10px;
+            right: 100%;
+            background: #ef4444;
+            color: #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Toggle Sidebar Button -->
+<button class="toggle-sidebar-btn" onclick="toggleRightSidebar()" id="toggleSidebarBtn" title="Otwórz Archiwum i Memorium">
+    <span class="notification-badge" id="archiveNotification" style="display: none;">0</span>
+    📂 ARCHIWUM
+</button>
+
+<!-- Right Sidebar -->
+<div class="right-sidebar" id="rightSidebar">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h2 style="font-size: 1.3rem; color: var(--color-gold);">📂 Archiwum & Memorium</h2>
+        <button onclick="toggleRightSidebar()" style="background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;" title="Zamknij">✕</button>
+    </div>
+
+    <!-- Memorium Section -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">
+            <span>💀 Memorium</span>
+            <span class="badge-count" id="memoriumCount">0</span>
+        </div>
+        <div id="memoriumList">
+            <div class="empty-state">Brak klientów w Memorium</div>
+        </div>
+    </div>
+
+    <!-- Archive Section -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">
+            <span>📦 Archiwum</span>
+            <span class="badge-count" id="archiveCount">0</span>
+        </div>
+        <div id="archiveList">
+            <div class="empty-state">Brak zarchiwizowanych elementów</div>
+        </div>
+    </div>
+</div>
+
+<!-- Client Details Modal -->
+<div class="modal-overlay" id="clientModal">
+    <div class="modal">
+        <h2>Szczegóły Klienta</h2>
+        <div id="clientDetails"></div>
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button class="btn-primary" onclick="closeModal()">Zamknij</button>
+            <button class="btn-danger" onclick="moveToMemorium()">
+                💀 ${client && client.status === 'memorium' ? 'Przywróć' : 'Memorium'}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal-overlay" id="taskModal">
+    <div class="modal">
+        <h2 id="taskModalTitle">Nowe Zadanie</h2>
+        <form id="taskForm" onsubmit="handleTaskSubmit(event)">
+            <div class="form-group">
+                <label>Klient</label>
+                <select id="taskClient" required></select>
+            </div>
+            <div class="form-group">
+                <label>Tytuł</label>
+                <input type="text" id="taskTitle" required>
+            </div>
+            <div class="form-group">
+                <label>Opis</label>
+                <textarea id="taskDescription" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Priorytet</label>
+                <select id="taskPriority">
+                    <option value="normal">Normal</option>
+                    <option value="emergency">🚨 Emergency</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn-primary">Utwórz Zadanie</button>
+                <button type="button" class="btn-danger" onclick="closeTaskModal()">Anuluj</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Emergency Settlement Modal -->
+<div class="modal-overlay" id="emergencyModal">
+    <div class="modal">
+        <h2>Rozlicz Emergency</h2>
+        <div id="emergencyDetails"></div>
+        <div style="margin-top: 20px;">
+            <button class="btn-primary" onclick="settleEmergency('paid')" style="width: 100%; margin-bottom: 10px;">
+                💰 Dolicz 150 PLN
+            </button>
+            <button class="btn-primary" onclick="settleEmergency('visit_exchange')" style="width: 100%; margin-bottom: 10px;">
+                🚗 Wymień na -1 Wizytę
+            </button>
+            <button class="btn-primary" onclick="settleEmergency('hours_exchange')" style="width: 100%; margin-bottom: 10px;">
+                ⏰ Wymień na -2 Godziny
+            </button>
+            <button class="btn-danger" onclick="closeEmergencyModal()" style="width: 100%; margin-top: 20px;">
+                Anuluj
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">M.A</div>
+        
+        <div class="nav-item active" onclick="showSection('dashboard')">
+            <span>🏠</span> Dashboard
+        </div>
+        <div class="nav-item" onclick="showSection('clients')">
+            <span>👥</span> Klienci
+        </div>
+        <div class="nav-item" onclick="showSection('tasks')">
+            <span>📋</span> Zadania
+        </div>
+        <div class="nav-item" onclick="showSection('emergency')">
+            <span>🚨</span> Emergency
+        </div>
+        <div class="nav-item" onclick="showSection('billing')">
+            <span>💰</span> Rozliczenia
+        </div>
+
+        <button class="btn-primary" onclick="logout()" style="margin-top: auto; width: calc(100% - 40px); margin-left: 20px;">
+            Wyloguj
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="topbar">
+            <div style="font-weight: 600; font-size: 0.9rem;">
+                Panel Administratora
+            </div>
+            <div class="user-info">
+                <div style="text-align: right;">
+                    <div style="font-size: 0.75rem; font-weight: 800;" id="admin-name">Julia Nowak</div>
+                    <div style="font-size: 0.65rem; color: #64748b;" id="admin-email">julia@example.com</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Wyloguj</button>
+            </div>
+        </div>
+
+        <div class="content" id="main-content">
+            <!-- Content will be loaded dynamically -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // State
+    let currentClientId = null;
+    let currentEmergencyId = null;
+    let allClients = [];
+    let currentSection = 'dashboard';
+    let sidebarOpen = false;
+
+    // Toast notifications
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideIn 0.3s ease reverse';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Sprawdź czy użytkownik jest zalogowany
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    if (!token || user.user_type !== 'admin') {
+        alert('Brak dostępu. Zaloguj się jako administrator.');
+        window.location.href = 'login.html';
+    }
+
+    // Fetch helpers
+    async function fetchAPI(endpoint, options = {}) {
+        const response = await fetch(`http://localhost:3000${endpoint}`, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                ...options.headers
+            }
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert('Sesja wygasła. Zaloguj się ponownie.');
+                logout();
+                return null;
+            }
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        return response.json();
+    }
+
+    // Navigation
+    function showSection(section) {
+        currentSection = section;
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => item.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        if (section === 'dashboard') {
+            loadDashboard();
+        } else if (section === 'clients') {
+            loadClientsSection();
+        } else if (section === 'tasks') {
+            loadTasksSection();
+        } else if (section === 'emergency') {
+            loadEmergencySection();
+        } else if (section === 'billing') {
+            loadBillingSection();
+        }
+    }
+
+    // Dashboard
+    async function loadDashboard() {
+        const content = document.getElementById('main-content');
+        content.innerHTML = `
+            <div class="welcome-box">
+                <h2>Witaj w Panelu Administratora! 👋</h2>
+                <p>System zarządzania klientami jest gotowy do użycia.</p>
+            </div>
+
+            <h1>Dashboard</h1>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Aktywni Klienci</div>
+                    <div class="stat-value" id="stat-clients">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Zadania (Ten miesiąc)</div>
+                    <div class="stat-value" id="stat-tasks">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Przychód</div>
+                    <div class="stat-value" id="stat-revenue">0 PLN</div>
+                </div>
+            </div>
+
+            <div class="clients-section">
+                <div class="section-title">📋 Lista Klientów</div>
+                <div class="client-list" id="client-list">
+                    <div style="text-align: center; padding: 40px; color: #64748b;">
+                        Ładowanie danych...
+                    </div>
+                </div>
+            </div>
+        `;
+
+        await loadDashboardData();
+    }
+
+    async function loadDashboardData() {
+        try {
+            // Load stats
+            const stats = await fetchAPI('/api/clients/stats/summary');
+            if (stats) {
+                document.getElementById('stat-clients').textContent = stats.activeClients || 0;
+                document.getElementById('stat-tasks').textContent = stats.monthlyTasks || 0;
+                document.getElementById('stat-revenue').textContent = `${(stats.totalRevenue || 0).toLocaleString('pl-PL')} PLN`;
+            }
+
+            // Load clients
+            const clients = await fetchAPI('/api/clients');
+            if (clients) {
+                allClients = clients;
+                renderClientList(clients);
+            }
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+            document.getElementById('client-list').innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #ef4444;">
+                    Błąd ładowania danych: ${error.message}
+                </div>
+            `;
+        }
+    }
+
+    function renderClientList(clients) {
+        const container = document.getElementById('client-list');
+        if (!clients || clients.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #64748b;">
+                    Brak klientów w systemie
+                </div>
+            `;
+            return;
+        }
+
+        // Grupowanie klientów według pakietu
+        const packageGroups = {
+            'P0': { name: '💻 P0: Wirtualny', color: '#94a3b8', clients: [] },
+            'P1': { name: '🚗 P1: Mobilny Start', color: '#3b82f6', clients: [] },
+            'P2': { name: '📂 P2: Hybrydowy Spokój', color: '#3b82f6', clients: [] },
+            'P3L': { name: '🏆 P3: Premium Light', color: '#c5a059', clients: [] },
+            'P3F': { name: '👑 P3: Premium Full', color: '#c5a059', clients: [] },
+            'P4': { name: '🛰️ P4: Satelita Biznesu', color: '#3b82f6', clients: [] },
+            'START': { name: '⭐ Dobry Start', color: '#22c55e', clients: [] }
+        };
+
+        // Przypisz klientów do grup
+        clients.forEach(client => {
+            const packageType = client.package_name || client.package_type;
+            if (packageGroups[packageType]) {
+                packageGroups[packageType].clients.push(client);
+            }
+        });
+
+        // Renderuj hierarchicznie
+        let html = '';
+        Object.entries(packageGroups).forEach(([packageKey, group]) => {
+            if (group.clients.length > 0) {
+                html += `
+                    <div class="package-group" style="margin-bottom: 30px;">
+                        <div class="package-header" style="
+                            background: rgba(255,255,255,0.05);
+                            border-left: 4px solid ${group.color};
+                            padding: 15px 20px;
+                            border-radius: 10px;
+                            margin-bottom: 15px;
+                            font-weight: 700;
+                            font-size: 1.1rem;
+                            color: ${group.color};
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                        ">
+                            <span>${group.name}</span>
+                            <span style="font-size: 0.9rem; opacity: 0.7;">${group.clients.length} ${group.clients.length === 1 ? 'klient' : 'klientów'}</span>
+                        </div>
+                        <div class="package-clients" style="display: grid; gap: 15px; padding-left: 20px;">
+                            ${group.clients.map(client => {
+                                const statusClass = client.status === 'active' ? 'status-completed' : 'status-rejected';
+                                const statusText = client.status === 'active' ? 'Aktywny' : 'Memorium';
+                                const usagePercent = client.visits_limit > 0 
+                                    ? Math.round((client.visits_used / client.visits_limit) * 100) 
+                                    : 0;
+
+                                return `
+                                    <div class="client-card" onclick="openClientModal(${client.id})" style="
+                                        background: rgba(255,255,255,0.03);
+                                        border: 1px solid rgba(255,255,255,0.1);
+                                        border-radius: 12px;
+                                        padding: 20px;
+                                        cursor: pointer;
+                                        transition: all 0.3s ease;
+                                    " onmouseover="this.style.background='rgba(255,255,255,0.08)'; this.style.borderColor='${group.color}';" 
+                                       onmouseout="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='rgba(255,255,255,0.1)';">
+                                        <div class="client-info">
+                                            <div class="client-name">${client.company_name}</div>
+                                            <div class="client-package" style="color: ${group.color};">${group.name.split(': ')[1]}</div>
+                                            <span class="status-badge ${statusClass}">${statusText}</span>
+                                        </div>
+                                        <div class="client-stats">
+                                            <div>
+                                                <strong>${client.visits_used}/${client.visits_limit}</strong> Wizyty
+                                                <div class="progress-bar">
+                                                    <div class="progress-fill" style="width: ${usagePercent}%; background: ${group.color};"></div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <strong>${client.hours_used}/${client.hours_limit}</strong> Godziny
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        container.innerHTML = html || `
+            <div style="text-align: center; padding: 40px; color: #64748b;">
+                Brak klientów w wybranej kategorii
+            </div>
+        `;
+    }
+
+    // Client modal
+    async function openClientModal(clientId) {
+        currentClientId = clientId;
+        const client = allClients.find(c => c.id === clientId);
+        if (!client) return;
+
+        document.getElementById('clientDetails').innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h3>${client.company_name}</h3>
+                <p style="color: #64748b;">Pakiet: ${client.package_name}</p>
+                <span class="status-badge ${client.status === 'active' ? 'status-completed' : 'status-rejected'}">
+                    ${client.status === 'active' ? 'Aktywny' : 'Memorium'}
+                </span>
+            </div>
+
+            <div class="form-group">
+                <label>Wizyty</label>
+                <div class="counter-box">
+                    <button type="button" class="counter-btn" onclick="updateCounter('visits', -1)">-</button>
+                    <div class="counter-value">${client.visits_used}/${client.visits_limit}</div>
+                    <button type="button" class="counter-btn" onclick="updateCounter('visits', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Godziny</label>
+                <div class="counter-box">
+                    <button type="button" class="counter-btn" onclick="updateCounter('hours', -1)">-</button>
+                    <div class="counter-value">${client.hours_used}/${client.hours_limit}</div>
+                    <button type="button" class="counter-btn" onclick="updateCounter('hours', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Kontakt</label>
+                <p>${client.email || 'Brak'}</p>
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <button class="btn-danger" onclick="deleteClient(${client.id})" style="width: 100%;">
+                    🗑️ Usuń Klienta
+                </button>
+            </div>
+        `;
+
+        document.getElementById('clientModal').classList.add('active');
+    }
+
+    async function deleteClient(clientId) {
+        if (!confirm('⚠️ Czy na pewno usunąć tego klienta? Ta operacja jest nieodwracalna!')) return;
+        
+        try {
+            await fetchAPI(`/api/clients/${clientId}`, {
+                method: 'DELETE'
+            });
+
+            showToast('Klient usunięty', 'success');
+            closeModal();
+            await loadDashboardData();
+            if (currentSection === 'clients') {
+                loadClientsSection();
+            }
+            if (sidebarOpen) {
+                await loadSidebarData();
+            }
+        } catch (error) {
+            showToast('Błąd usuwania klienta: ' + error.message, 'error');
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('clientModal').classList.remove('active');
+        currentClientId = null;
+    }
+
+    async function updateCounter(type, delta) {
+        if (!currentClientId) return;
+        
+        const client = allClients.find(c => c.id === currentClientId);
+        if (!client) return;
+
+        try {
+            const newValue = type === 'visits' 
+                ? Math.max(0, client.visits_used + delta)
+                : Math.max(0, client.hours_used + delta);
+
+            const updateData = type === 'visits'
+                ? { visits_used: newValue }
+                : { hours_used: newValue };
+
+            await fetchAPI(`/api/clients/${currentClientId}/subscription`, {
+                method: 'PUT',
+                body: JSON.stringify(updateData)
+            });
+
+            showToast('Liczniki zaktualizowane', 'success');
+            
+            // Reload data
+            await loadDashboardData();
+            openClientModal(currentClientId);
+        } catch (error) {
+            showToast('Błąd aktualizacji: ' + error.message, 'error');
+        }
+    }
+
+    async function moveToMemorium() {
+        if (!currentClientId) return;
+        
+        if (!confirm('Czy na pewno przenieść klienta do Memorium?')) return;
+
+        try {
+            const client = allClients.find(c => c.id === currentClientId);
+            const newStatus = client.status === 'active' ? 'memorium' : 'active';
+
+            await fetchAPI(`/api/clients/${currentClientId}/status`, {
+                method: 'PUT',
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            showToast(`Klient przeniesiony do ${newStatus === 'memorium' ? 'Memorium' : 'Aktywnych'}`, 'success');
+            closeModal();
+            await loadDashboardData();
+            if (sidebarOpen) {
+                await loadSidebarData();
+            }
+        } catch (error) {
+            showToast('Błąd zmiany statusu: ' + error.message, 'error');
+        }
+    }
+
+    // Clients section
+    async function loadClientsSection() {
+        const content = document.getElementById('main-content');
+        content.innerHTML = `
+            <h1>Zarządzanie Klientami</h1>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
+                <input type="text" id="searchClients" placeholder="Szukaj klientów..." 
+                       style="flex: 1; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff;"
+                       oninput="filterClients()">
+                <select id="filterStatus" onchange="filterClients()" 
+                        style="padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff;">
+                    <option value="all">Wszystkie</option>
+                    <option value="active">Aktywne</option>
+                    <option value="memorium">Memorium</option>
+                </select>
+                <button class="btn-primary" onclick="alert('Funkcja dodawania klientów będzie dostępna wkrótce')">
+                    + Dodaj Klienta
+                </button>
+            </div>
+            
+            <div class="client-list" id="client-list">
+                <div style="text-align: center; padding: 40px; color: #64748b;">
+                    Ładowanie danych...
+                </div>
+            </div>
+        `;
+
+        try {
+            const clients = await fetchAPI('/api/clients');
+            if (clients) {
+                allClients = clients;
+                filterClients();
+            }
+        } catch (error) {
+            document.getElementById('client-list').innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #ef4444;">
+                    Błąd ładowania danych: ${error.message}
+                </div>
+            `;
+        }
+    }
+
+    function filterClients() {
+        const searchTerm = document.getElementById('searchClients')?.value.toLowerCase() || '';
+        const statusFilter = document.getElementById('filterStatus')?.value || 'all';
+        
+        let filtered = allClients;
+        
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(c => c.status === statusFilter);
+        }
+        
+        if (searchTerm) {
+            filtered = filtered.filter(c => 
+                c.company_name.toLowerCase().includes(searchTerm) ||
+                c.email?.toLowerCase().includes(searchTerm) ||
+                c.package_name?.toLowerCase().includes(searchTerm)
+            );
+        }
+        
+        renderClientList(filtered);
+    }
+
+    // Tasks section
+    async function loadTasksSection() {
+        const content = document.getElementById('main-content');
+        content.innerHTML = `
+            <h1>Zlecenia</h1>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
+                <select id="filterTaskStatus" onchange="filterTasks()" 
+                        style="padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff;">
+                    <option value="all">Wszystkie</option>
+                    <option value="new">Nowe</option>
+                    <option value="in_progress">W trakcie</option>
+                    <option value="completed">Zakończone</option>
+                    <option value="rejected">Odrzucone</option>
+                </select>
+                <div style="flex: 1; color: #64748b; font-size: 0.9rem;">
+                    Znaleziono: <strong id="taskCount">0</strong> zadań
+                </div>
+                <button class="btn-primary" onclick="openTaskModal()">
+                    + Nowe Zadanie
+                </button>
+            </div>
+            
+            <div id="tasks-container">
+                <div style="text-align: center; padding: 40px; color: #64748b;">
+                    Ładowanie danych...
+                </div>
+            </div>
+        `;
+
+        try {
+            const tasks = await fetchAPI('/api/tasks');
+            if (tasks) {
+                window.allTasks = tasks;
+                filterTasks();
+            }
+        } catch (error) {
+            document.getElementById('tasks-container').innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #ef4444;">
+                    Błąd ładowania zadań
+                </div>
+            `;
+        }
+    }
+
+    function filterTasks() {
+        const statusFilter = document.getElementById('filterTaskStatus')?.value || 'all';
+        let filtered = window.allTasks || [];
+        
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(t => t.status === statusFilter);
+        }
+        
+        document.getElementById('taskCount').textContent = filtered.length;
+        renderTasks(filtered);
+    }
+
+    function renderTasks(tasks) {
+        const container = document.getElementById('tasks-container');
+        if (!tasks || tasks.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #64748b;">
+                    Brak zadań
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = tasks.map(task => `
+            <div class="task-card ${task.is_emergency ? 'emergency' : ''}">
+                <div class="task-header">
+                    <div class="task-title">
+                        ${task.is_emergency ? '🚨 ' : ''}${task.title}
+                    </div>
+                    <span class="status-badge status-${task.status}">${task.status}</span>
+                </div>
+                <div class="task-meta">
+                    Klient: ${task.client_name || 'N/A'} | Utworzono: ${new Date(task.created_at).toLocaleDateString('pl-PL')}
+                </div>
+                <div>${task.description || ''}</div>
+                ${task.status === 'new' ? `
+                    <div style="margin-top: 15px;">
+                        <button class="btn-primary" style="padding: 8px 16px; font-size: 0.75rem;" 
+                                onclick="updateTaskStatus(${task.id}, 'in_progress')">
+                            Rozpocznij
+                        </button>
+                        <button class="btn-danger" style="padding: 8px 16px; font-size: 0.75rem;" 
+                                onclick="updateTaskStatus(${task.id}, 'rejected')">
+                            Odrzuć
+                        </button>
+                    </div>
+                ` : ''}
+                ${task.status === 'in_progress' ? `
+                    <div style="margin-top: 15px;">
+                        <button class="btn-primary" style="padding: 8px 16px; font-size: 0.75rem;" 
+                                onclick="updateTaskStatus(${task.id}, 'completed')">
+                            Zakończ
+                        </button>
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+
+    async function updateTaskStatus(taskId, newStatus) {
+        try {
+            await fetchAPI(`/api/tasks/${taskId}/status`, {
+                method: 'PUT',
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            showToast('Status zadania zaktualizowany', 'success');
+            loadTasksSection();
+        } catch (error) {
+            showToast('Błąd aktualizacji statusu: ' + error.message, 'error');
+        }
+    }
+
+    function openTaskModal() {
+        // Load clients for select
+        const clientSelect = document.getElementById('taskClient');
+        clientSelect.innerHTML = allClients
+            .filter(c => c.status === 'active')
+            .map(c => `<option value="${c.id}">${c.company_name}</option>`)
+            .join('');
+
+        document.getElementById('taskForm').reset();
+        document.getElementById('taskModal').classList.add('active');
+    }
+
+    function closeTaskModal() {
+        document.getElementById('taskModal').classList.remove('active');
+    }
+
+    async function handleTaskSubmit(event) {
+        event.preventDefault();
+        
+        const formData = {
+            user_id: parseInt(document.getElementById('taskClient').value),
+            title: document.getElementById('taskTitle').value,
+            description: document.getElementById('taskDescription').value,
+            is_emergency: document.getElementById('taskPriority').value === 'emergency'
+        };
+
+        try {
+            await fetchAPI('/api/tasks', {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            });
+
+            showToast('Zadanie utworzone', 'success');
+            closeTaskModal();
+            loadTasksSection();
+        } catch (error) {
+            showToast('Błąd tworzenia zadania: ' + error.message, 'error');
+        }
+    }
+
+    // Emergency section
+    async function loadEmergencySection() {
+        const content = document.getElementById('main-content');
+        content.innerHTML = `
+            <h1>🚨 Emergency</h1>
+            <p style="color: #64748b; margin-bottom: 30px;">
+                Zlecenia Emergency wymagają rozliczenia: 150 PLN lub wymiana na wizyty/godziny
+            </p>
+            <div id="emergency-container">
+                <div style="text-align: center; padding: 40px; color: #64748b;">
+                    Ładowanie danych...
+                </div>
+            </div>
+        `;
+
+        try {
+            const emergencies = await fetchAPI('/api/tasks/emergency');
+            if (emergencies) {
+                renderEmergencies(emergencies);
+            }
+        } catch (error) {
+            document.getElementById('emergency-container').innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #ef4444;">
+                    Błąd ładowania danych
+                </div>
+            `;
+        }
+    }
+
+    function renderEmergencies(emergencies) {
+        const container = document.getElementById('emergency-container');
+        if (!emergencies || emergencies.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #64748b;">
+                    Brak nierozliczonych Emergency
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = emergencies.map(task => `
+            <div class="task-card emergency">
+                <div class="task-header">
+                    <div class="task-title">🚨 ${task.title}</div>
+                    <span class="status-badge status-${task.status}">${task.status}</span>
+                </div>
+                <div class="task-meta">
+                    Klient: ${task.client_name || 'N/A'} | ${new Date(task.created_at).toLocaleDateString('pl-PL')}
+                </div>
+                <div style="margin-top: 10px;">${task.description || ''}</div>
+                ${task.status === 'completed' && !task.emergency_settled ? `
+                    <div style="margin-top: 15px;">
+                        <button class="btn-primary" style="padding: 8px 16px; font-size: 0.75rem;" 
+                                onclick="openEmergencyModal(${task.id}, '${task.title}', '${task.client_name}', '${task.created_at}')">
+                            Rozlicz Emergency
+                        </button>
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+
+    function openEmergencyModal(emergencyId, title, clientName, createdAt) {
+        currentEmergencyId = emergencyId;
+
+        document.getElementById('emergencyDetails').innerHTML = `
+            <div style="padding: 20px; background: rgba(239, 68, 68, 0.1); border-radius: 10px;">
+                <h3>${title}</h3>
+                <p style="color: #64748b; margin-top: 10px;">
+                    Klient: ${clientName}<br>
+                    Data: ${new Date(createdAt).toLocaleDateString('pl-PL')}
+                </p>
+            </div>
+        `;
+
+        document.getElementById('emergencyModal').classList.add('active');
+    }
+
+    function closeEmergencyModal() {
+        document.getElementById('emergencyModal').classList.remove('active');
+        currentEmergencyId = null;
+    }
+
+    async function settleEmergency(settlementType) {
+        if (!currentEmergencyId) return;
+
+        try {
+            await fetchAPI(`/api/tasks/${currentEmergencyId}/emergency/settle`, {
+                method: 'POST',
+                body: JSON.stringify({ settlement_type: settlementType })
+            });
+
+            const messages = {
+                'paid': 'Emergency rozliczone: +150 PLN',
+                'visit_exchange': 'Emergency rozliczone: -1 wizyta',
+                'hours_exchange': 'Emergency rozliczone: -2 godziny'
+            };
+            showToast(messages[settlementType] || 'Emergency rozliczone', 'success');
+            
+            closeEmergencyModal();
+            loadEmergencySection();
+        } catch (error) {
+            showToast('Błąd rozliczenia: ' + error.message, 'error');
+        }
+    }
+
+    // Billing section
+    async function loadBillingSection() {
+        const content = document.getElementById('main-content');
+        content.innerHTML = `
+            <h1>💰 Rozliczenia</h1>
+            <p style="color: #64748b;">Moduł rozliczeń będzie dostępny wkrótce</p>
+        `;
+    }
+
+    // Logout
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+    }
+
+    // Right Sidebar Functions
+    function toggleRightSidebar() {
+        sidebarOpen = !sidebarOpen;
+        const sidebar = document.getElementById('rightSidebar');
+        sidebar.classList.toggle('open');
+        
+        if (sidebarOpen) {
+            loadSidebarData();
+        }
+    }
+
+    async function loadSidebarData() {
+        await loadMemoriumList();
+        await loadArchiveList();
+    }
+
+    async function loadMemoriumList() {
+        try {
+            const clients = await fetchAPI('/api/clients');
+            const memoriumClients = clients.filter(c => c.status === 'memorium');
+            
+            document.getElementById('memoriumCount').textContent = memoriumClients.length;
+            
+            // Update notification badge
+            const notificationBadge = document.getElementById('archiveNotification');
+            const toggleBtn = document.getElementById('toggleSidebarBtn');
+            if (memoriumClients.length > 0) {
+                notificationBadge.textContent = memoriumClients.length;
+                notificationBadge.style.display = 'flex';
+                toggleBtn.classList.add('pulse-notification');
+            } else {
+                notificationBadge.style.display = 'none';
+                toggleBtn.classList.remove('pulse-notification');
+            }
+            
+            const container = document.getElementById('memoriumList');
+            if (memoriumClients.length === 0) {
+                container.innerHTML = '<div class="empty-state">Brak klientów w Memorium</div>';
+                return;
+            }
+            
+            container.innerHTML = memoriumClients.map(client => `
+                <div class="sidebar-item" onclick="openClientModal(${client.id})">
+                    <div class="sidebar-item-name">${client.company_name}</div>
+                    <div class="sidebar-item-meta">
+                        ${client.package_name || 'Brak pakietu'}<br>
+                        Przeniesiono: ${new Date(client.updated_at || client.created_at).toLocaleDateString('pl-PL')}
+                    </div>
+                    <button class="restore-btn" onclick="event.stopPropagation(); restoreFromMemorium(${client.id})">
+                        ↩️ Przywróć
+                    </button>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading memorium:', error);
+        }
+    }
+
+    async function loadArchiveList() {
+        try {
+            const response = await fetchAPI('/api/tasks/archive');
+            
+            if (!response || !response.years || response.years.length === 0) {
+                document.getElementById('archiveCount').textContent = 0;
+                document.getElementById('archiveList').innerHTML = '<div class="empty-state">Brak zarchiwizowanych danych</div>';
+                return;
+            }
+            
+            document.getElementById('archiveCount').textContent = response.years.length;
+            
+            const container = document.getElementById('archiveList');
+            container.innerHTML = response.years.map(year => `
+                <div class="archive-year" onclick="toggleYear(${year})">
+                    <div class="archive-year-header">
+                        <span>📅 ${year}</span>
+                        <span class="chevron" id="chevron-${year}">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="year-${year}"></div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading archive:', error);
+            document.getElementById('archiveList').innerHTML = '<div class="empty-state">Błąd ładowania archiwum</div>';
+        }
+    }
+
+    async function restoreFromMemorium(clientId) {
+        if (!confirm('Czy na pewno przywrócić klienta do aktywnych?')) return;
+        
+        try {
+            await fetchAPI(`/api/clients/${clientId}/status`, {
+                method: 'PUT',
+                body: JSON.stringify({ status: 'active' })
+            });
+            
+            showToast('Klient przywrócony do aktywnych', 'success');
+            loadSidebarData();
+            if (currentSection === 'dashboard' || currentSection === 'clients') {
+                loadDashboardData();
+            }
+        } catch (error) {
+            showToast('Błąd przywracania: ' + error.message, 'error');
+        }
+    }
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideIn 0.3s ease reverse';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('admin-name').textContent = user.full_name || 'Admin';
+        document.getElementById('admin-email').textContent = user.email || 'admin@example.com';
+        
+        loadDashboard();
+        
+        // Check for memorium items on load
+        checkMemoriumNotification();
+        
+        // Auto-refresh dashboard data every 30 seconds
+        setInterval(() => {
+            if (currentSection === 'dashboard') {
+                loadDashboardData();
+            }
+            // Refresh sidebar if open
+            if (sidebarOpen) {
+                loadSidebarData();
+            } else {
+                // Check notification even when closed
+                checkMemoriumNotification();
+            }
+        }, 30000);
+    });
+
+    // Check memorium count for notification
+    async function checkMemoriumNotification() {
+        try {
+            const clients = await fetchAPI('/api/clients');
+            const memoriumClients = clients.filter(c => c.status === 'memorium');
+            
+            const notificationBadge = document.getElementById('archiveNotification');
+            const toggleBtn = document.getElementById('toggleSidebarBtn');
+            
+            if (memoriumClients.length > 0) {
+                notificationBadge.textContent = memoriumClients.length;
+                notificationBadge.style.display = 'flex';
+                toggleBtn.classList.add('pulse-notification');
+            } else {
+                notificationBadge.style.display = 'none';
+                toggleBtn.classList.remove('pulse-notification');
+            }
+        } catch (error) {
+            console.error('Error checking memorium:', error);
+        }
+    }
+
+    // Archive hierarchy navigation
+    let openYears = {};
+    let openMonths = {};
+    
+    async function toggleYear(year) {
+        event.stopPropagation();
+        const content = document.getElementById(`year-${year}`);
+        const chevron = document.getElementById(`chevron-${year}`);
+        
+        if (openYears[year]) {
+            content.classList.remove('open');
+            chevron.classList.remove('open');
+            openYears[year] = false;
+        } else {
+            // Load months if not loaded
+            if (!content.innerHTML) {
+                await loadMonths(year);
+            }
+            content.classList.add('open');
+            chevron.classList.add('open');
+            openYears[year] = true;
+        }
+    }
+    
+    async function loadMonths(year) {
+        try {
+            const response = await fetchAPI(`/api/tasks/archive/${year}`);
+            const container = document.getElementById(`year-${year}`);
+            
+            if (!response || !response.months || response.months.length === 0) {
+                container.innerHTML = '<div class="empty-state" style="margin-left: 15px;">Brak danych dla tego roku</div>';
+                return;
+            }
+            
+            const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 
+                               'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+            
+            container.innerHTML = response.months.map(m => `
+                <div class="archive-month" onclick="toggleMonth(${year}, ${m.month})">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${monthNames[m.month - 1]}</strong>
+                            <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">
+                                ${m.clients_count || 0} klientów • ${m.total_tasks || 0} zadań • ${(m.total_revenue || 0).toLocaleString('pl-PL')} PLN
+                            </div>
+                        </div>
+                        <span class="chevron" id="chevron-${year}-${m.month}">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="month-${year}-${m.month}"></div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading months:', error);
+        }
+    }
+    
+    async function toggleMonth(year, month) {
+        event.stopPropagation();
+        const content = document.getElementById(`month-${year}-${month}`);
+        const chevron = document.getElementById(`chevron-${year}-${month}`);
+        const key = `${year}-${month}`;
+        
+        if (openMonths[key]) {
+            content.classList.remove('open');
+            chevron.classList.remove('open');
+            openMonths[key] = false;
+        } else {
+            // Load clients if not loaded
+            if (!content.innerHTML) {
+                await loadArchiveClients(year, month);
+            }
+            content.classList.add('open');
+            chevron.classList.add('open');
+            openMonths[key] = true;
+        }
+    }
+    
+    async function loadArchiveClients(year, month) {
+        try {
+            const response = await fetchAPI(`/api/tasks/archive/${year}/${month}`);
+            const container = document.getElementById(`month-${year}-${month}`);
+            
+            if (!response || !response.clients || response.clients.length === 0) {
+                container.innerHTML = '<div class="empty-state" style="margin-left: 30px;">Brak klientów</div>';
+                return;
+            }
+            
+            container.innerHTML = response.clients.map(client => `
+                <div class="archive-client" onclick="showArchiveDetails(${year}, ${month}, ${client.user_id}, '${client.client_name}')">
+                    <div style="font-weight: 700; margin-bottom: 4px;">${client.client_name}</div>
+                    <div style="font-size: 0.75rem; color: #64748b;">
+                        ${client.package_name || 'Brak pakietu'} • ${client.tasks_count || 0} zadań • ${(client.revenue || 0).toLocaleString('pl-PL')} PLN
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading archive clients:', error);
+        }
+    }
+    
+    async function showArchiveDetails(year, month, userId, clientName) {
+        event.stopPropagation();
+        
+        try {
+            const archive = await fetchAPI(`/api/tasks/archive/${year}/${month}/${userId}`);
+            
+            if (!archive) {
+                showToast('Nie znaleziono danych archiwum', 'error');
+                return;
+            }
+            
+            const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 
+                               'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+            
+            // Create modal for archive details
+            const modalHtml = `
+                <div class="modal-overlay active" id="archiveDetailModal" onclick="closeArchiveModal()">
+                    <div class="modal" onclick="event.stopPropagation()" style="max-width: 700px;">
+                        <h2>📊 Archiwum: ${clientName}</h2>
+                        <p style="color: #64748b; margin-bottom: 20px;">${monthNames[month - 1]} ${year}</p>
+                        
+                        <div class="archive-detail">
+                            <div class="detail-row">
+                                <span class="detail-label">Pakiet:</span>
+                                <span class="detail-value">${archive.package_name || 'Brak'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Liczba zadań:</span>
+                                <span class="detail-value">${archive.tasks_count || 0}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Wykorzystane wizyty:</span>
+                                <span class="detail-value">${archive.visits_used || 0}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Wykorzystane godziny:</span>
+                                <span class="detail-value">${archive.hours_used || 0}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Przychód:</span>
+                                <span class="detail-value">${(archive.revenue || 0).toLocaleString('pl-PL')} PLN</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Data archiwizacji:</span>
+                                <span class="detail-value">${new Date(archive.created_at).toLocaleDateString('pl-PL')}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; padding: 15px; background: rgba(239, 68, 68, 0.1); border-radius: 10px; border-left: 3px solid #ef4444;">
+                            <strong>🔒 Dane chronione</strong>
+                            <p style="margin-top: 8px; font-size: 0.85rem; color: #94a3b8;">
+                                Dane archiwalne są trwale chronione i nie mogą być usunięte, nawet po usunięciu klienta z systemu.
+                            </p>
+                        </div>
+                        
+                        <button class="btn-primary" onclick="closeArchiveModal()" style="width: 100%; margin-top: 20px;">
+                            Zamknij
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        } catch (error) {
+            showToast('Błąd ładowania szczegółów: ' + error.message, 'error');
+        }
+    }
+    
+    function closeArchiveModal() {
+        const modal = document.getElementById('archiveDetailModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julia | Logowanie i Rejestracja</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #0a0f18;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --accent-color: #3b82f6;
+            --text-main: #f8fafc;
+            --border-color: rgba(255, 255, 255, 0.2); 
+            --color-gold: #c5a059;
+        }
+
+        /* MOTYWY STRONY LOGOWANIA */
+        body.theme-p0 { --accent-color: #94a3b8; --bg-body: #0f172a; }
+        body.theme-standard { --accent-color: #3b82f6; --bg-body: #020617; }
+        body.theme-gold { --accent-color: #c5a059; --bg-body: #0c0a05; }
+        body.theme-platinum-full { 
+            --accent-color: #ffffff;
+            --bg-body: #000000; 
+            --card-bg: rgba(20, 20, 20, 0.98);
+            --border-color: rgba(197, 160, 89, 0.6);
+            --text-main: #ffffff;
+        }
+
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100%; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        /* --- STRONA LOGOWANIA/REJESTRACJI --- */
+        #auth-page {
+            display: flex; 
+            align-items: flex-start; 
+            justify-content: center;
+            padding: 60px 20px; 
+            box-sizing: border-box; 
+            min-height: 100vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg); 
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border-color); 
+            padding: 50px;
+            border-radius: 30px; 
+            width: 100%; 
+            max-width: 650px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+            margin: auto;
+        }
+
+        .main-title { 
+            text-align: center; 
+            font-weight: 800; 
+            font-size: 1.4rem; 
+            margin: 0; 
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #3b82f6, #f472b6, #eab308, #3b82f6);
+            background-size: 200% auto; 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            animation: shineText 4s linear infinite; 
+            white-space: normal; 
+            line-height: 1.2;
+        }
+
+        .form-subtitle { 
+            text-align: center; 
+            font-size: 1.1rem; 
+            font-weight: 400; 
+            color: #cbd5e1; 
+            margin-top: 10px; 
+            margin-bottom: 40px; 
+        }
+
+        .form-group { 
+            margin-bottom: 25px; 
+            text-align: left; 
+            position: relative; 
+        }
+
+        label { 
+            display: block; 
+            font-size: 0.75rem; 
+            color: var(--accent-color); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            margin-bottom: 10px; 
+        }
+        
+        input {
+            width: 100%; 
+            padding: 18px; 
+            border-radius: 14px; 
+            border: 1px solid var(--border-color);
+            background: rgba(0,0,0,0.4); 
+            color: white; 
+            box-sizing: border-box; 
+            font-family: inherit; 
+            outline: none; 
+            font-size: 1rem;
+        }
+
+        input::placeholder { 
+            color: rgba(255,255,255,0.3); 
+        }
+
+        .pass-toggle { 
+            position: absolute; 
+            right: 20px; 
+            top: 43px; 
+            font-size: 0.7rem; 
+            font-weight: 800; 
+            color: var(--accent-color); 
+            cursor: pointer; 
+            user-select: none; 
+            opacity: 1; 
+        }
+
+        .package-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            margin-top: 20px; 
+        }
+
+        .label-group { 
+            font-size: 0.7rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            color: var(--accent-color); 
+            font-weight: 800; 
+            margin: 25px 0 10px; 
+            text-align: left; 
+        }
+        
+        .pkg-item { 
+            background: rgba(255,255,255,0.04); 
+            border: 1px solid var(--border-color); 
+            padding: 18px; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-weight: 600; 
+        }
+
+        .pkg-item:hover { 
+            background: rgba(255,255,255,0.08); 
+        }
+
+        .pkg-item.active { 
+            border-color: var(--accent-color); 
+            background: rgba(255,255,255,0.12); 
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); 
+        }
+        
+        .pkg-full { 
+            border: 1px solid rgba(197, 160, 89, 0.5); 
+            background: rgba(0,0,0,0.6); 
+        }
+
+        .pkg-full strong { 
+            background: linear-gradient(90deg, #ffffff, #c5a059, #ffffff); 
+            background-size: 200% auto; 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            animation: shineText 3s linear infinite; 
+            font-size: 1.1rem; 
+        }
+
+        .btn-action { 
+            width: 100%; 
+            padding: 22px; 
+            border-radius: 18px; 
+            border: none; 
+            background: var(--accent-color); 
+            color: #000; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            cursor: pointer; 
+            margin-top: 40px; 
+            transition: all 0.4s ease; 
+            font-size: 1rem; 
+        }
+        
+        body.theme-platinum-full .btn-action {
+            background: linear-gradient(135deg, #c5a059, #ffffff, #c5a059);
+            background-size: 200% auto; 
+            animation: pulseShine 3s infinite linear;
+        }
+
+        @keyframes shineText { 
+            to { background-position: 200% center; } 
+        }
+
+        @keyframes pulseShine { 
+            0% { background-position: 0% center; } 
+            100% { background-position: 200% center; } 
+        }
+
+        .auth-footer { 
+            text-align: center; 
+            margin-top: 30px; 
+            color: #94a3b8; 
+            font-size: 0.9rem; 
+        }
+
+        .toggle-link { 
+            color: var(--accent-color); 
+            font-weight: 800; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-left: 8px; 
+            text-decoration: underline; 
+        }
+
+        .hidden { 
+            display: none !important; 
+        }
+
+        .back-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: var(--color-gold);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            transition: 0.3s;
+            background: rgba(197, 160, 89, 0.05);
+        }
+
+        .back-home:hover {
+            background: rgba(197, 160, 89, 0.15);
+            border-color: var(--color-gold);
+        }
+    </style>
+</head>
+<body class="theme-p0">
+
+<div id="auth-page">
+    <a href="index.html" class="back-home">← Powrót do strony głównej</a>
+    
+    <div class="auth-card">
+        <h1 class="main-title">Mobilna Asystentka od zadań specjalnych</h1>
+        
+        <div id="login-section">
+            <p class="form-subtitle">Panel logowania</p>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Nazwa firmy / Login</label>
+                    <input type="text" id="login-user" placeholder="Wpisz login..." required>
+                </div>
+                <div class="form-group">
+                    <label>Hasło</label>
+                    <input type="password" class="password-field" id="login-pass" placeholder="••••••••" required>
+                    <span class="pass-toggle" onclick="togglePassword(this)">POKAŻ</span>
+                </div>
+                <button type="submit" class="btn-action">Zaloguj do systemu</button>
+            </form>
+            <div class="auth-footer">
+                Nie masz konta? 
+                <span class="toggle-link" onclick="switchForm('reg')">Zarejestruj się!</span>
+            </div>
+        </div>
+
+        <div id="registration-section" class="hidden">
+            <p class="form-subtitle">Formularz rejestracji</p>
+            <form id="reg-form" onsubmit="handleRegistration(event)">
+                <div class="form-group">
+                    <label>Nazwa firmy / Login</label>
+                    <input type="text" id="reg-user" placeholder="Jan Kowalski / Firma X" required>
+                </div>
+                <div class="form-group">
+                    <label>Adres Email</label>
+                    <input type="email" id="reg-email" placeholder="twoj@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Ustaw Hasło</label>
+                    <input type="password" class="password-field" id="reg-pass" placeholder="••••••••" required>
+                    <span class="pass-toggle" onclick="togglePassword(this)">POKAŻ</span>
+                </div>
+                
+                <div class="package-list">
+                    <div class="label-group">Wsparcie Zdalne</div>
+                    <div class="pkg-item active" onclick="changeTheme(this, 'p0')" data-package="P0">
+                        <span>P0: Wirtualny</span>
+                        <span style="opacity: 0.6; font-size: 0.8rem;">Online</span>
+                    </div>
+                    
+                    <div class="label-group">Wsparcie Terenowe</div>
+                    <div class="pkg-item" onclick="changeTheme(this, 'standard')" data-package="P1">
+                        P1: Mobilny Start
+                    </div>
+                    <div class="pkg-item" onclick="changeTheme(this, 'standard')" data-package="P2">
+                        P2: Hybrydowy Spokój
+                    </div>
+                    <div class="pkg-item" onclick="changeTheme(this, 'standard')" data-package="P4">
+                        P4: Satelita Biznesu
+                    </div>
+                    
+                    <div class="label-group">Strefa Premium</div>
+                    <div class="pkg-item" onclick="changeTheme(this, 'gold')" data-package="P3L">
+                        P3: Premium Light
+                    </div>
+                    <div class="pkg-item pkg-full" onclick="changeTheme(this, 'platinum-full')" data-package="P3F">
+                        <strong>💎 P3: Premium Full</strong>
+                        <span style="color: #c5a059; font-weight: 800;">VIP</span>
+                    </div>
+                    <div class="pkg-item" onclick="changeTheme(this, 'gold')" data-package="START">
+                        ⭐ Dobry Start
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-action">Zarejestruj się</button>
+            </form>
+            <div class="auth-footer">
+                Masz już konto? 
+                <span class="toggle-link" onclick="switchForm('login')">Zaloguj się</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dane logowania admina
+    const adminCredentials = { 
+        user: "j.nowak0703", 
+        pass: "Julka2001." 
+    };
+
+    let selectedPackage = "P0";
+
+    async function handleLogin(event) {
+        event.preventDefault();
+        const userInp = document.getElementById('login-user').value;
+        const passInp = document.getElementById('login-pass').value;
+        const submitBtn = event.target.querySelector('button[type="submit"]');
+        
+        // Disable button
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'LOGOWANIE...';
+        
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ login: userInp, password: passInp })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                // Zapisz token i dane użytkownika
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                alert("✅ Logowanie pomyślne!");
+                
+                // Przekierowanie w zależności od typu użytkownika
+                if (data.user.user_type === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'client.html';
+                }
+            } else {
+                alert("❌ " + data.error);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'ZALOGUJ DO SYSTEMU';
+            }
+        } catch (error) {
+            console.error('Błąd logowania:', error);
+            alert("❌ Błąd połączenia z serwerem. Upewnij się, że serwer działa.");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'ZALOGUJ DO SYSTEMU';
+        }
+    }
+
+    async function handleRegistration(event) {
+        event.preventDefault();
+        const userName = document.getElementById('reg-user').value;
+        const userEmail = document.getElementById('reg-email').value;
+        const userPass = document.getElementById('reg-pass').value;
+        const submitBtn = event.target.querySelector('button[type="submit"]');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'WYSYŁANIE...';
+        
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    login: userName,
+                    email: userEmail,
+                    password: userPass,
+                    company_name: userName,
+                    package: selectedPackage
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                alert(`✅ Rejestracja pomyślna! Możesz się teraz zalogować.\n\nLogin: ${userName}\nPakiet: ${selectedPackage}`);
+                document.getElementById('reg-form').reset();
+                switchForm('login');
+            } else {
+                alert("❌ " + data.error);
+            }
+        } catch (error) {
+            console.error('Błąd rejestracji:', error);
+            alert("❌ Błąd połączenia z serwerem.");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'ZAREJESTRUJ SIĘ';
+        }
+    }
+
+    function switchForm(mode) {
+        const reg = document.getElementById('registration-section');
+        const login = document.getElementById('login-section');
+        
+        if(mode === 'reg') { 
+            login.classList.add('hidden'); 
+            reg.classList.remove('hidden'); 
+        } else { 
+            reg.classList.add('hidden'); 
+            login.classList.remove('hidden'); 
+        }
+    }
+
+    function changeTheme(element, themeName) {
+        document.querySelectorAll('.pkg-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        document.body.className = 'theme-' + themeName;
+        selectedPackage = element.getAttribute('data-package');
+    }
+
+    function togglePassword(btn) {
+        const input = btn.parentElement.querySelector('.password-field');
+        input.type = (input.type === 'password') ? 'text' : 'password';
+        btn.innerText = (input.type === 'password') ? 'POKAŻ' : 'UKRYJ';
+    }
+</script>
+
+</body>
+</html>
