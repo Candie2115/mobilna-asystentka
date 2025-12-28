@@ -5,7 +5,7 @@ const { authenticateToken, requireAdmin } = require('../middleware/auth');
 const router = express.Router();
 
 // GET /api/tasks - Lista wszystkich zadań
-router.get('/', authenticateToken, (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const db = getDb();
         const isAdmin = req.user.user_type === 'admin';
@@ -48,7 +48,7 @@ router.get('/', authenticateToken, (req, res) => {
 });
 
 // POST /api/tasks - Nowe zadanie
-router.post('/', authenticateToken, (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     try {
         const db = getDb();
         const { title, description, priority } = req.body;
@@ -73,7 +73,7 @@ router.post('/', authenticateToken, (req, res) => {
 });
 
 // PUT /api/tasks/:id/status - Zmiana statusu zadania
-router.put('/:id/status', authenticateToken, requireAdmin, (req, res) => {
+router.put('/:id/status', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         const { status } = req.body;
@@ -105,7 +105,7 @@ router.put('/:id/status', authenticateToken, requireAdmin, (req, res) => {
 });
 
 // GET /api/tasks/emergency - Emergency zadania
-router.get('/emergency', authenticateToken, requireAdmin, (req, res) => {
+router.get('/emergency', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         
@@ -142,7 +142,7 @@ router.get('/emergency', authenticateToken, requireAdmin, (req, res) => {
 });
 
 // POST /api/tasks/:id/emergency/settle - Rozliczenie Emergency
-router.post('/:id/emergency/settle', authenticateToken, requireAdmin, (req, res) => {
+router.post('/:id/emergency/settle', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         const { settlement_type } = req.body; // 'paid', 'visit_exchange', 'hours_exchange'
@@ -188,7 +188,7 @@ router.post('/:id/emergency/settle', authenticateToken, requireAdmin, (req, res)
 });
 
 // GET /api/tasks/archive - Lista archiwów miesięcznych
-router.get('/archive', authenticateToken, requireAdmin, (req, res) => {
+router.get('/archive', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         
@@ -223,7 +223,7 @@ router.get('/archive', authenticateToken, requireAdmin, (req, res) => {
 });
 
 // GET /api/tasks/archive/:year - Miesiące dla roku
-router.get('/archive/:year', authenticateToken, requireAdmin, (req, res) => {
+router.get('/archive/:year', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         const year = parseInt(req.params.year);
@@ -260,7 +260,7 @@ router.get('/archive/:year', authenticateToken, requireAdmin, (req, res) => {
 });
 
 // GET /api/tasks/archive/:year/:month - Klienci dla miesiąca
-router.get('/archive/:year/:month', authenticateToken, requireAdmin, (req, res) => {
+router.get('/archive/:year/:month', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         const year = parseInt(req.params.year);
@@ -302,7 +302,7 @@ router.get('/archive/:year/:month', authenticateToken, requireAdmin, (req, res) 
 });
 
 // GET /api/tasks/archive/:year/:month/:userId - Szczegóły archiwum klienta
-router.get('/archive/:year/:month/:userId', authenticateToken, requireAdmin, (req, res) => {
+router.get('/archive/:year/:month/:userId', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         const year = parseInt(req.params.year);

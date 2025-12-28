@@ -5,7 +5,7 @@ const { authenticateToken, requireAdmin } = require('../middleware/auth');
 const router = express.Router();
 
 // GET /api/clients/stats/summary - Statystyki (MUST BE BEFORE /:id)
-router.get('/stats/summary', authenticateToken, requireAdmin, (req, res) => {
+router.get('/stats/summary', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
 
@@ -39,7 +39,7 @@ router.get('/stats/summary', authenticateToken, requireAdmin, (req, res) => {
 });
 
 // GET /api/clients - Lista wszystkich klientów (admin) lub własne dane (klient)
-router.get('/', authenticateToken, (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const db = getDb();
         const isAdmin = req.user.user_type === 'admin';
@@ -84,7 +84,7 @@ router.get('/', authenticateToken, (req, res) => {
 });
 
 // GET /api/clients/:id - Szczegóły klienta
-router.get('/:id', authenticateToken, requireAdmin, (req, res) => {
+router.get('/:id', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         const clientId = req.params.id;
@@ -118,7 +118,7 @@ router.get('/:id', authenticateToken, requireAdmin, (req, res) => {
 });
 
 // PUT /api/clients/:id/status - Zmiana statusu (active/memorium)
-router.put('/:id/status', authenticateToken, requireAdmin, (req, res) => {
+router.put('/:id/status', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         const { status } = req.body;
@@ -145,7 +145,7 @@ router.put('/:id/status', authenticateToken, requireAdmin, (req, res) => {
 });
 
 // PUT /api/clients/:id/subscription - Aktualizacja liczników
-router.put('/:id/subscription', authenticateToken, requireAdmin, (req, res) => {
+router.put('/:id/subscription', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         const { visits_used, hours_used } = req.body;
@@ -183,7 +183,7 @@ router.put('/:id/subscription', authenticateToken, requireAdmin, (req, res) => {
 });
 
 // DELETE /api/clients/:id - Usunięcie klienta
-router.delete('/:id', authenticateToken, requireAdmin, (req, res) => {
+router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const db = getDb();
         const clientId = req.params.id;

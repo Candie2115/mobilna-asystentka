@@ -3,13 +3,13 @@ const router = express.Router();
 const { getDb, saveDatabase } = require('../database/db');
 
 // ===== TASK MANAGER =====
-router.get('/tasks/:clientId', (req, res) => {
+router.get('/tasks/:clientId', async (req, res) => {
     const db = getDb();
     const result = db.exec(`SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC`, [req.params.clientId]);
     res.json(result[0]?.values || []);
 });
 
-router.post('/tasks', (req, res) => {
+router.post('/tasks', async (req, res) => {
     const { clientId, title, description, priority } = req.body;
     const db = getDb();
     await db.run(`INSERT INTO tasks (user_id, title, description, status, priority) VALUES (?, ?, ?, 'pending', ?)`, 
@@ -18,7 +18,7 @@ router.post('/tasks', (req, res) => {
     res.json({ success: true });
 });
 
-router.put('/tasks/:taskId', (req, res) => {
+router.put('/tasks/:taskId', async (req, res) => {
     const { status } = req.body;
     const db = getDb();
     await db.run(`UPDATE tasks SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`, 
@@ -27,7 +27,7 @@ router.put('/tasks/:taskId', (req, res) => {
     res.json({ success: true });
 });
 
-router.delete('/tasks/:taskId', (req, res) => {
+router.delete('/tasks/:taskId', async (req, res) => {
     const db = getDb();
     await db.run(`DELETE FROM tasks WHERE id = ?`, [req.params.taskId]);
     saveDatabase();
@@ -35,7 +35,7 @@ router.delete('/tasks/:taskId', (req, res) => {
 });
 
 // ===== DIRECT CHAT =====
-router.get('/chat/:clientId', (req, res) => {
+router.get('/chat/:clientId', async (req, res) => {
     const db = getDb();
     const result = db.exec(`
         SELECT id, client_id, sender, message, created_at 
@@ -55,7 +55,7 @@ router.get('/chat/:clientId', (req, res) => {
     res.json(messages);
 });
 
-router.post('/chat', (req, res) => {
+router.post('/chat', async (req, res) => {
     const { clientId, sender, message } = req.body;
     const db = getDb();
     await db.run(`INSERT INTO chat_messages (client_id, sender, message) VALUES (?, ?, ?)`, 
@@ -65,7 +65,7 @@ router.post('/chat', (req, res) => {
 });
 
 // ===== FAKTURY/ROZLICZENIA =====
-router.get('/invoices/:clientId', (req, res) => {
+router.get('/invoices/:clientId', async (req, res) => {
     const db = getDb();
     const result = db.exec(`
         SELECT id, client_id, invoice_number, amount, status, created_at 
@@ -86,7 +86,7 @@ router.get('/invoices/:clientId', (req, res) => {
     res.json(invoices);
 });
 
-router.post('/invoices', (req, res) => {
+router.post('/invoices', async (req, res) => {
     const { clientId, amount } = req.body;
     const invoiceNumber = `FV/${new Date().getFullYear()}/${Math.floor(Math.random() * 9000 + 1000)}`;
     const db = getDb();
@@ -96,7 +96,7 @@ router.post('/invoices', (req, res) => {
     res.json({ success: true, invoiceNumber });
 });
 
-router.put('/invoices/:invoiceId', (req, res) => {
+router.put('/invoices/:invoiceId', async (req, res) => {
     const { status } = req.body;
     const db = getDb();
     await db.run(`UPDATE invoices SET status = ? WHERE id = ?`, [status, req.params.invoiceId]);
@@ -105,7 +105,7 @@ router.put('/invoices/:invoiceId', (req, res) => {
 });
 
 // ===== KALENDARZ WSPÓŁPRACY =====
-router.get('/calendar/:clientId', (req, res) => {
+router.get('/calendar/:clientId', async (req, res) => {
     const db = getDb();
     const result = db.exec(`
         SELECT id, client_id, event_date, event_title, created_at 
@@ -125,7 +125,7 @@ router.get('/calendar/:clientId', (req, res) => {
     res.json(events);
 });
 
-router.post('/calendar', (req, res) => {
+router.post('/calendar', async (req, res) => {
     const { clientId, eventDate, eventTitle } = req.body;
     const db = getDb();
     await db.run(`INSERT INTO calendar_events (client_id, event_date, event_title) VALUES (?, ?, ?)`, 
@@ -134,7 +134,7 @@ router.post('/calendar', (req, res) => {
     res.json({ success: true });
 });
 
-router.delete('/calendar/:eventId', (req, res) => {
+router.delete('/calendar/:eventId', async (req, res) => {
     const db = getDb();
     await db.run(`DELETE FROM calendar_events WHERE id = ?`, [req.params.eventId]);
     saveDatabase();
@@ -142,7 +142,7 @@ router.delete('/calendar/:eventId', (req, res) => {
 });
 
 // ===== SYSTEM LOGS (tylko admin) =====
-router.post('/logs', (req, res) => {
+router.post('/logs', async (req, res) => {
     const { action, details } = req.body;
     const db = getDb();
     await db.run(`INSERT INTO system_logs (action, details) VALUES (?, ?)`, [action, details || '']);
@@ -150,7 +150,7 @@ router.post('/logs', (req, res) => {
     res.json({ success: true });
 });
 
-router.get('/logs', (req, res) => {
+router.get('/logs', async (req, res) => {
     const db = getDb();
     const result = db.exec(`SELECT * FROM system_logs ORDER BY created_at DESC LIMIT 50`);
     
@@ -165,7 +165,7 @@ router.get('/logs', (req, res) => {
 });
 
 // ===== ARCHIWUM MIESIĘCZNE =====
-router.post('/archive', (req, res) => {
+router.post('/archive', async (req, res) => {
     const { clientId, month, year } = req.body;
     const db = getDb();
     await db.run(`INSERT INTO monthly_archive (client_id, archive_month, archive_year) VALUES (?, ?, ?)`, 
@@ -174,7 +174,7 @@ router.post('/archive', (req, res) => {
     res.json({ success: true });
 });
 
-router.get('/archive', (req, res) => {
+router.get('/archive', async (req, res) => {
     const db = getDb();
     const result = db.exec(`
         SELECT ma.id, u.username, ma.archive_month, ma.archive_year, ma.created_at
@@ -195,7 +195,7 @@ router.get('/archive', (req, res) => {
 });
 
 // ===== MEMORIUM (dezaktywowani) =====
-router.post('/memorium/:clientId', (req, res) => {
+router.post('/memorium/:clientId', async (req, res) => {
     const db = getDb();
     await db.run(`UPDATE users SET status = 'deactivated', deactivated_at = CURRENT_TIMESTAMP WHERE id = ?`, 
         [req.params.clientId]);
@@ -203,7 +203,7 @@ router.post('/memorium/:clientId', (req, res) => {
     res.json({ success: true });
 });
 
-router.post('/memorium/reactivate/:clientId', (req, res) => {
+router.post('/memorium/reactivate/:clientId', async (req, res) => {
     const db = getDb();
     await db.run(`UPDATE users SET status = 'active', deactivated_at = NULL WHERE id = ?`, 
         [req.params.clientId]);
@@ -211,7 +211,7 @@ router.post('/memorium/reactivate/:clientId', (req, res) => {
     res.json({ success: true });
 });
 
-router.get('/memorium', (req, res) => {
+router.get('/memorium', async (req, res) => {
     const db = getDb();
     const result = db.exec(`SELECT * FROM users WHERE status = 'deactivated' ORDER BY deactivated_at DESC`);
     
@@ -227,7 +227,7 @@ router.get('/memorium', (req, res) => {
 });
 
 // ===== EMERGENCY WYMIANA =====
-router.post('/emergency/exchange', (req, res) => {
+router.post('/emergency/exchange', async (req, res) => {
     const { clientId, exchangeType } = req.body; // 'visit' or 'hours'
     const db = getDb();
     
