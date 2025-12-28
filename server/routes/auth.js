@@ -23,7 +23,7 @@ router.post('/login', [
         const db = getDb();
         
         // Pobierz użytkownika z bazy
-        const result = db.exec('SELECT * FROM users WHERE login = ?', [login]);
+        const result = await db.exec('SELECT * FROM users WHERE login = ?', [login]);
         
         if (result.length === 0 || result[0].values.length === 0) {
             return res.status(401).json({ error: 'Nieprawidłowy login lub hasło' });
@@ -62,7 +62,7 @@ router.post('/login', [
         );
 
         // Log bezpieczeństwa
-        db.run('INSERT INTO security_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)',
+        await db.run('INSERT INTO security_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)',
             [user.id, 'LOGIN_SUCCESS', `Użytkownik ${user.login} zalogował się pomyślnie`, req.ip]
         );
         saveDatabase();
@@ -104,7 +104,7 @@ router.post('/register', [
         const db = getDb();
         
         // Sprawdź czy login/email już istnieją
-        const existing = db.exec('SELECT * FROM users WHERE login = ? OR email = ?', [login, email]);
+        const existing = await db.exec('SELECT * FROM users WHERE login = ? OR email = ?', [login, email]);
 
         if (existing.length > 0 && existing[0].values.length > 0) {
             return res.status(409).json({ error: 'Login lub email już istnieje' });
@@ -114,11 +114,11 @@ router.post('/register', [
         const passwordHash = await bcrypt.hash(password, 10);
 
         // Dodaj użytkownika z przypisanym pakietem
-        db.run('INSERT INTO users (login, email, password_hash, user_type, company_name, status, package_type) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        await db.run('INSERT INTO users (login, email, password_hash, user_type, company_name, status, package_type) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [login, email, passwordHash, 'client', company_name, 'active', packageName]
         );
 
-        const userResult = db.exec('SELECT id FROM users WHERE login = ?', [login]);
+        const userResult = await db.exec('SELECT id FROM users WHERE login = ?', [login]);
         const userId = userResult[0].values[0][0];
 
         // Przypisz pakiet
@@ -140,12 +140,12 @@ router.post('/register', [
         const renewalDate = new Date();
         renewalDate.setMonth(renewalDate.getMonth() + 1);
 
-        db.run('INSERT INTO subscriptions (user_id, package_name, package_price, visits_limit, hours_limit, renewal_date) VALUES (?, ?, ?, ?, ?, ?)',
+        await db.run('INSERT INTO subscriptions (user_id, package_name, package_price, visits_limit, hours_limit, renewal_date) VALUES (?, ?, ?, ?, ?, ?)',
             [userId, packageName, price, limits.visits, limits.hours, renewalDate.toISOString().split('T')[0]]
         );
 
         // Log
-        db.run('INSERT INTO security_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)',
+        await db.run('INSERT INTO security_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)',
             [userId, 'REGISTER_SUCCESS', `Nowe konto: ${company_name} (${packageName})`, req.ip]
         );
         
