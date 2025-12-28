@@ -1,10 +1,9 @@
 const { Pool } = require('pg');
 const PostgreSQLWrapper = require('./db-wrapper');
 
-// Connection string z Supabase (będzie pobierany z .env)
-// Używamy Transaction mode pooler dla Supabase
+// Connection string z Supabase - DIRECT CONNECTION (nie pooler)
 const connectionString = process.env.DATABASE_URL || 
-    'postgresql://postgres:gOgkviqlCTtnON6Q@aws-0-eu-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1';
+    'postgresql://postgres:gOgkviqlCTtnON6Q@db.fppzabmjqnfspmxysgno.supabase.co:5432/postgres';
 
 let pool;
 let dbWrapper;
@@ -13,8 +12,12 @@ async function initDatabase() {
     pool = new Pool({
         connectionString: connectionString,
         ssl: {
-            rejectUnauthorized: false // Wymagane dla Supabase
-        }
+            rejectUnauthorized: false
+        },
+        // Dodatkowe opcje dla stabilności
+        max: 3, // Maksymalnie 3 połączenia (Free tier limit)
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
     });
 
     try {
