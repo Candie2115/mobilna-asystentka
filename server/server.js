@@ -19,11 +19,13 @@ const authRoutes = require('./routes/auth');
 const clientsRoutes = require('./routes/clients');
 const tasksRoutes = require('./routes/tasks');
 const contactRoutes = require('./routes/contact');
+const featuresRoutes = require('./routes/features');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/clients', clientsRoutes);
 app.use('/api/tasks', tasksRoutes);
 app.use('/api', contactRoutes);
+app.use('/api', featuresRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

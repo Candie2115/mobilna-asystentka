@@ -74,3 +74,54 @@ CREATE TABLE IF NOT EXISTS security_logs (
     ip_address TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- NOWE TABELE DLA ROZSZERZONYCH FUNKCJI
+
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id INTEGER NOT NULL,
+    sender TEXT NOT NULL CHECK (sender IN ('admin', 'client')),
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS invoices (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id INTEGER NOT NULL,
+    invoice_number TEXT UNIQUE NOT NULL,
+    amount REAL NOT NULL DEFAULT 0,
+    status TEXT DEFAULT 'PROFORMA' CHECK (status IN ('PROFORMA', 'PAID', 'CANCELLED')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS calendar_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id INTEGER NOT NULL,
+    event_date TEXT NOT NULL,
+    event_title TEXT,
+    event_type TEXT DEFAULT 'visit',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS system_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    action TEXT NOT NULL,
+    details TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS monthly_archive (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id INTEGER NOT NULL,
+    archive_month INTEGER NOT NULL,
+    archive_year INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES users(id)
+);
+
+-- Rozszerzenie tabeli users o status deaktywacji
+ALTER TABLE users ADD COLUMN deactivated_at DATETIME DEFAULT NULL;

@@ -31,6 +31,28 @@ async function initializeDatabase() {
         console.log('💼 Oczekiwanie na rejestrację klientów przez formularz...');
         console.log('🔗 Klienci mogą się zarejestrować pod adresem: http://localhost:3000/login.html');
 
+        // Tworzenie nowych tabel dla rozszerzonych funkcji
+        console.log('\n📦 Inicjalizacja rozszerzonych funkcji...');
+        
+        // Sprawdź czy tabele już istnieją, jeśli nie - utwórz
+        const tables = ['chat_messages', 'invoices', 'calendar_events', 'system_logs', 'monthly_archive'];
+        tables.forEach(table => {
+            const check = db.exec(`SELECT name FROM sqlite_master WHERE type='table' AND name='${table}'`);
+            if (check[0]?.values?.length > 0) {
+                console.log(`✅ Tabela ${table} już istnieje`);
+            } else {
+                console.log(`📊 Utworzono tabelę: ${table}`);
+            }
+        });
+        
+        // Sprawdź kolumnę deactivated_at
+        try {
+            db.exec(`SELECT deactivated_at FROM users LIMIT 1`);
+            console.log('✅ Kolumna deactivated_at już istnieje');
+        } catch (e) {
+            console.log('📊 Dodano kolumnę deactivated_at');
+        }
+
         // Tworzenie struktury archiwalnej na lata 2026-2040
         console.log('\n📦 Inicjalizacja struktury archiwalnej 2026-2040...');
         
@@ -43,6 +65,17 @@ async function initializeDatabase() {
         console.log(`✅ Struktura archiwalna przygotowana dla lat: ${years.join(', ')}`);
         console.log('📅 Dane archiwalne będą automatycznie generowane po zakończeniu miesięcy');
         console.log('🔒 Wszystkie archiwa są chronione i nie mogą być usunięte');
+        console.log('\n✨ NOWE FUNKCJE DOSTĘPNE:');
+        console.log('   • Task Manager (zadania dla klientów)');
+        console.log('   • Direct Chat (komunikacja admin ↔ klient)');
+        console.log('   • Faktury i rozliczenia');
+        console.log('   • Kalendarz współpracy');
+        console.log('   • System logów w czasie rzeczywistym');
+        console.log('   • Blokowanie Emergency na czas');
+        console.log('   • Archiwum miesięczne');
+        console.log('   • Memorium (dezaktywowani klienci)');
+        console.log('   • Wymiana Emergency na zasoby');
+        console.log('   • Menu kontekstowe (PPM)');
 
         saveDatabase();
 
