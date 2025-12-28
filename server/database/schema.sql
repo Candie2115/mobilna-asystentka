@@ -6,11 +6,12 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     user_type TEXT NOT NULL CHECK (user_type IN ('admin', 'client')),
-    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'memorium')),
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'memorium', 'deactivated')),
     company_name TEXT,
     package_type TEXT CHECK (package_type IN ('P0', 'P1', 'P2', 'P3L', 'P3F', 'P4', 'START')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deactivated_at DATETIME DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS subscriptions (
@@ -37,6 +38,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     is_emergency BOOLEAN DEFAULT 0,
     emergency_settled BOOLEAN DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -122,6 +124,3 @@ CREATE TABLE IF NOT EXISTS monthly_archive (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES users(id)
 );
-
--- Rozszerzenie tabeli users o status deaktywacji
-ALTER TABLE users ADD COLUMN deactivated_at DATETIME DEFAULT NULL;

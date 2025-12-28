@@ -5,15 +5,15 @@ const { getDb, saveDatabase } = require('../database/db');
 // ===== TASK MANAGER =====
 router.get('/tasks/:clientId', (req, res) => {
     const db = getDb();
-    const result = db.exec(`SELECT * FROM tasks WHERE client_id = ? ORDER BY created_at DESC`, [req.params.clientId]);
+    const result = db.exec(`SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC`, [req.params.clientId]);
     res.json(result[0]?.values || []);
 });
 
 router.post('/tasks', (req, res) => {
-    const { clientId, title, description } = req.body;
+    const { clientId, title, description, priority } = req.body;
     const db = getDb();
-    db.run(`INSERT INTO tasks (client_id, title, description, status) VALUES (?, ?, ?, 'pending')`, 
-        [clientId, title, description || '']);
+    db.run(`INSERT INTO tasks (user_id, title, description, status, priority) VALUES (?, ?, ?, 'pending', ?)`, 
+        [clientId, title, description || '', priority || 'normal']);
     saveDatabase();
     res.json({ success: true });
 });
@@ -177,9 +177,9 @@ router.post('/archive', (req, res) => {
 router.get('/archive', (req, res) => {
     const db = getDb();
     const result = db.exec(`
-        SELECT ma.id, c.username, ma.archive_month, ma.archive_year, ma.created_at
+        SELECT ma.id, u.username, ma.archive_month, ma.archive_year, ma.created_at
         FROM monthly_archive ma
-        JOIN clients c ON ma.client_id = c.id
+        JOIN users u ON ma.client_id = u.id
         ORDER BY ma.archive_year DESC, ma.archive_month DESC
     `);
     
@@ -197,7 +197,7 @@ router.get('/archive', (req, res) => {
 // ===== MEMORIUM (dezaktywowani) =====
 router.post('/memorium/:clientId', (req, res) => {
     const db = getDb();
-    db.run(`UPDATE clients SET status = 'deactivated', deactivated_at = CURRENT_TIMESTAMP WHERE id = ?`, 
+    db.run(`UPDATE users SET status = 'deactivated', deactivated_at = CURRENT_TIMESTAMP WHERE id = ?`, 
         [req.params.clientId]);
     saveDatabase();
     res.json({ success: true });
@@ -205,7 +205,7 @@ router.post('/memorium/:clientId', (req, res) => {
 
 router.post('/memorium/reactivate/:clientId', (req, res) => {
     const db = getDb();
-    db.run(`UPDATE clients SET status = 'active', deactivated_at = NULL WHERE id = ?`, 
+    db.run(`UPDATE users SET status = 'active', deactivated_at = NULL WHERE id = ?`, 
         [req.params.clientId]);
     saveDatabase();
     res.json({ success: true });
@@ -213,14 +213,14 @@ router.post('/memorium/reactivate/:clientId', (req, res) => {
 
 router.get('/memorium', (req, res) => {
     const db = getDb();
-    const result = db.exec(`SELECT * FROM clients WHERE status = 'deactivated' ORDER BY deactivated_at DESC`);
+    const result = db.exec(`SELECT * FROM users WHERE status = 'deactivated' ORDER BY deactivated_at DESC`);
     
     const deactivated = (result[0]?.values || []).map(row => ({
         id: row[0],
         username: row[1],
         email: row[2],
         package: row[4],
-        deactivatedAt: row[6]
+        deactivatedAt: row[13]
     }));
     
     res.json(deactivated);
@@ -232,14 +232,14 @@ router.post('/emergency/exchange', (req, res) => {
     const db = getDb();
     
     // Usuń jedną interwencję emergency
-    const emergencyResult = db.exec(`SELECT id FROM tasks WHERE client_id = ? AND priority = 'emergency' LIMIT 1`, [clientId]);
+    const emergencyResult = db.exec(`SELECT id FROM tasks WHERE user_id = ? AND priority = 'emergency' LIMIT 1`, [clientId]);
     
     if (emergencyResult[0]?.values?.length > 0) {
         const emergencyId = emergencyResult[0].values[0][0];
         db.run(`DELETE FROM tasks WHERE id = ?`, [emergencyId]);
         
         // Odejmij zasoby
-        const clientResult = db.exec(`SELECT username FROM clients WHERE id = ?`, [clientId]);
+        const clientResult = db.exec(`SELECT username FROM users WHERE id = ?`, [clientId]);
         if (clientResult[0]?.values?.length > 0) {
             // Tu możesz dodać logikę odejmowania wizyt/godzin
             // Wymaga rozszerzenia tabeli clients o kolumny visits/hours
