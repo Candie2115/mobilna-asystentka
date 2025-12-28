@@ -58,7 +58,7 @@ router.post('/', authenticateToken, (req, res) => {
             return res.status(400).json({ error: 'Tytuł zadania jest wymagany' });
         }
 
-        db.run(
+        await db.run(
             'INSERT INTO tasks (user_id, title, description, priority, status) VALUES (?, ?, ?, ?, ?)',
             [userId, title, description, priority || 'normal', 'new']
         );
@@ -94,7 +94,7 @@ router.put('/:id/status', authenticateToken, requireAdmin, (req, res) => {
         query += ' WHERE id = ?';
         updates.push(taskId);
 
-        db.run(query, updates);
+        await db.run(query, updates);
         saveDatabase();
 
         res.json({ message: 'Status zadania zaktualizowany' });
@@ -158,23 +158,23 @@ router.post('/:id/emergency/settle', authenticateToken, requireAdmin, (req, res)
 
         if (settlement_type === 'paid') {
             // Dodaj do rozliczeń
-            db.run(
+            await db.run(
                 'INSERT INTO billing (user_id, task_id, item_type, amount, settlement_type) VALUES (?, ?, ?, ?, ?)',
                 [userId, taskId, 'emergency', 150, 'paid']
             );
         } else if (settlement_type === 'visit_exchange') {
             // Odejmij wizytę
-            db.run('UPDATE subscriptions SET visits_used = visits_used + 1 WHERE user_id = ?', [userId]);
+            await db.run('UPDATE subscriptions SET visits_used = visits_used + 1 WHERE user_id = ?', [userId]);
         } else if (settlement_type === 'hours_exchange') {
             // Odejmij 2 godziny
-            db.run('UPDATE subscriptions SET hours_used = hours_used + 2 WHERE user_id = ?', [userId]);
+            await db.run('UPDATE subscriptions SET hours_used = hours_used + 2 WHERE user_id = ?', [userId]);
         }
 
         // Zaktualizuj status zadania
-        db.run('UPDATE tasks SET status = ? WHERE id = ?', ['completed', taskId]);
+        await db.run('UPDATE tasks SET status = ? WHERE id = ?', ['completed', taskId]);
 
         // Log
-        db.run('INSERT INTO security_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)',
+        await db.run('INSERT INTO security_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)',
             [req.user.id, 'EMERGENCY_SETTLE', `Rozliczenie Emergency ID:${taskId} jako ${settlement_type}`, req.ip]
         );
 

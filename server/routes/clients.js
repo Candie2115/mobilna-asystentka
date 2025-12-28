@@ -128,10 +128,10 @@ router.put('/:id/status', authenticateToken, requireAdmin, (req, res) => {
             return res.status(400).json({ error: 'Nieprawidłowy status' });
         }
 
-        db.run('UPDATE users SET status = ? WHERE id = ?', [status, clientId]);
+        await db.run('UPDATE users SET status = ? WHERE id = ?', [status, clientId]);
         
         // Log
-        db.run('INSERT INTO security_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)',
+        await db.run('INSERT INTO security_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)',
             [req.user.id, 'STATUS_CHANGE', `Zmiana statusu klienta ${clientId} na ${status}`, req.ip]
         );
         
@@ -171,7 +171,7 @@ router.put('/:id/subscription', authenticateToken, requireAdmin, (req, res) => {
         
         values.push(clientId);
         
-        db.run(`UPDATE subscriptions SET ${updates.join(', ')} WHERE user_id = ?`, values);
+        await db.run(`UPDATE subscriptions SET ${updates.join(', ')} WHERE user_id = ?`, values);
 
         saveDatabase();
 
@@ -188,10 +188,10 @@ router.delete('/:id', authenticateToken, requireAdmin, (req, res) => {
         const db = getDb();
         const clientId = req.params.id;
 
-        db.run('DELETE FROM users WHERE id = ?', [clientId]);
+        await db.run('DELETE FROM users WHERE id = ?', [clientId]);
         
         // Log
-        db.run('INSERT INTO security_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)',
+        await db.run('INSERT INTO security_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)',
             [req.user.id, 'CLIENT_DELETE', `Usunięto klienta ID: ${clientId}`, req.ip]
         );
         

@@ -12,7 +12,7 @@ router.get('/tasks/:clientId', (req, res) => {
 router.post('/tasks', (req, res) => {
     const { clientId, title, description, priority } = req.body;
     const db = getDb();
-    db.run(`INSERT INTO tasks (user_id, title, description, status, priority) VALUES (?, ?, ?, 'pending', ?)`, 
+    await db.run(`INSERT INTO tasks (user_id, title, description, status, priority) VALUES (?, ?, ?, 'pending', ?)`, 
         [clientId, title, description || '', priority || 'normal']);
     saveDatabase();
     res.json({ success: true });
@@ -21,7 +21,7 @@ router.post('/tasks', (req, res) => {
 router.put('/tasks/:taskId', (req, res) => {
     const { status } = req.body;
     const db = getDb();
-    db.run(`UPDATE tasks SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`, 
+    await db.run(`UPDATE tasks SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`, 
         [status, req.params.taskId]);
     saveDatabase();
     res.json({ success: true });
@@ -29,7 +29,7 @@ router.put('/tasks/:taskId', (req, res) => {
 
 router.delete('/tasks/:taskId', (req, res) => {
     const db = getDb();
-    db.run(`DELETE FROM tasks WHERE id = ?`, [req.params.taskId]);
+    await db.run(`DELETE FROM tasks WHERE id = ?`, [req.params.taskId]);
     saveDatabase();
     res.json({ success: true });
 });
@@ -58,7 +58,7 @@ router.get('/chat/:clientId', (req, res) => {
 router.post('/chat', (req, res) => {
     const { clientId, sender, message } = req.body;
     const db = getDb();
-    db.run(`INSERT INTO chat_messages (client_id, sender, message) VALUES (?, ?, ?)`, 
+    await db.run(`INSERT INTO chat_messages (client_id, sender, message) VALUES (?, ?, ?)`, 
         [clientId, sender, message]);
     saveDatabase();
     res.json({ success: true });
@@ -90,7 +90,7 @@ router.post('/invoices', (req, res) => {
     const { clientId, amount } = req.body;
     const invoiceNumber = `FV/${new Date().getFullYear()}/${Math.floor(Math.random() * 9000 + 1000)}`;
     const db = getDb();
-    db.run(`INSERT INTO invoices (client_id, invoice_number, amount, status) VALUES (?, ?, ?, 'PROFORMA')`, 
+    await db.run(`INSERT INTO invoices (client_id, invoice_number, amount, status) VALUES (?, ?, ?, 'PROFORMA')`, 
         [clientId, invoiceNumber, amount || 0]);
     saveDatabase();
     res.json({ success: true, invoiceNumber });
@@ -99,7 +99,7 @@ router.post('/invoices', (req, res) => {
 router.put('/invoices/:invoiceId', (req, res) => {
     const { status } = req.body;
     const db = getDb();
-    db.run(`UPDATE invoices SET status = ? WHERE id = ?`, [status, req.params.invoiceId]);
+    await db.run(`UPDATE invoices SET status = ? WHERE id = ?`, [status, req.params.invoiceId]);
     saveDatabase();
     res.json({ success: true });
 });
@@ -128,7 +128,7 @@ router.get('/calendar/:clientId', (req, res) => {
 router.post('/calendar', (req, res) => {
     const { clientId, eventDate, eventTitle } = req.body;
     const db = getDb();
-    db.run(`INSERT INTO calendar_events (client_id, event_date, event_title) VALUES (?, ?, ?)`, 
+    await db.run(`INSERT INTO calendar_events (client_id, event_date, event_title) VALUES (?, ?, ?)`, 
         [clientId, eventDate, eventTitle || '']);
     saveDatabase();
     res.json({ success: true });
@@ -136,7 +136,7 @@ router.post('/calendar', (req, res) => {
 
 router.delete('/calendar/:eventId', (req, res) => {
     const db = getDb();
-    db.run(`DELETE FROM calendar_events WHERE id = ?`, [req.params.eventId]);
+    await db.run(`DELETE FROM calendar_events WHERE id = ?`, [req.params.eventId]);
     saveDatabase();
     res.json({ success: true });
 });
@@ -145,7 +145,7 @@ router.delete('/calendar/:eventId', (req, res) => {
 router.post('/logs', (req, res) => {
     const { action, details } = req.body;
     const db = getDb();
-    db.run(`INSERT INTO system_logs (action, details) VALUES (?, ?)`, [action, details || '']);
+    await db.run(`INSERT INTO system_logs (action, details) VALUES (?, ?)`, [action, details || '']);
     saveDatabase();
     res.json({ success: true });
 });
@@ -168,7 +168,7 @@ router.get('/logs', (req, res) => {
 router.post('/archive', (req, res) => {
     const { clientId, month, year } = req.body;
     const db = getDb();
-    db.run(`INSERT INTO monthly_archive (client_id, archive_month, archive_year) VALUES (?, ?, ?)`, 
+    await db.run(`INSERT INTO monthly_archive (client_id, archive_month, archive_year) VALUES (?, ?, ?)`, 
         [clientId, month, year]);
     saveDatabase();
     res.json({ success: true });
@@ -197,7 +197,7 @@ router.get('/archive', (req, res) => {
 // ===== MEMORIUM (dezaktywowani) =====
 router.post('/memorium/:clientId', (req, res) => {
     const db = getDb();
-    db.run(`UPDATE users SET status = 'deactivated', deactivated_at = CURRENT_TIMESTAMP WHERE id = ?`, 
+    await db.run(`UPDATE users SET status = 'deactivated', deactivated_at = CURRENT_TIMESTAMP WHERE id = ?`, 
         [req.params.clientId]);
     saveDatabase();
     res.json({ success: true });
@@ -205,7 +205,7 @@ router.post('/memorium/:clientId', (req, res) => {
 
 router.post('/memorium/reactivate/:clientId', (req, res) => {
     const db = getDb();
-    db.run(`UPDATE users SET status = 'active', deactivated_at = NULL WHERE id = ?`, 
+    await db.run(`UPDATE users SET status = 'active', deactivated_at = NULL WHERE id = ?`, 
         [req.params.clientId]);
     saveDatabase();
     res.json({ success: true });
@@ -236,7 +236,7 @@ router.post('/emergency/exchange', (req, res) => {
     
     if (emergencyResult[0]?.values?.length > 0) {
         const emergencyId = emergencyResult[0].values[0][0];
-        db.run(`DELETE FROM tasks WHERE id = ?`, [emergencyId]);
+        await db.run(`DELETE FROM tasks WHERE id = ?`, [emergencyId]);
         
         // Odejmij zasoby
         const clientResult = db.exec(`SELECT username FROM users WHERE id = ?`, [clientId]);
