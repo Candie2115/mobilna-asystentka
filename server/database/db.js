@@ -42,6 +42,10 @@ function getDb() {
     return dbWrapper; // Zwracamy wrapper zamiast pool
 }
 
+function getPool() {
+    return pool; // Dla init.js który potrzebuje bezpośredniego dostępu
+}
+
 // Zamknij połączenie przy wyłączaniu
 process.on('exit', () => {
     if (pool) pool.end();
@@ -51,4 +55,4 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-module.exports = { initDatabase, saveDatabase, getDb };
+module.exports = { initDatabase, saveDatabase, getDb, getPool };

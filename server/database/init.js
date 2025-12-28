@@ -1,14 +1,14 @@
 const bcrypt = require('bcryptjs');
-const { initDatabase, getDb } = require('./db');
+const { initDatabase, getPool } = require('./db');
 const fs = require('fs');
 const path = require('path');
 
 async function initializeDatabase() {
     try {
-        console.log('🔧 Inicjalizacja bazy danych PostgreSQL (Supabase)...');
+        console.log('🔧 Inicjalizacja bazy danych PostgreSQL (Railway)...');
 
         await initDatabase();
-        const pool = getDb();
+        const pool = getPool();
 
         // Wczytaj i wykonaj schemat SQL
         const schemaPath = path.join(__dirname, 'schema.sql');
@@ -68,54 +68,9 @@ async function initializeDatabase() {
         console.log('   Admin: j.nowak0703 / Julka2001.');
         console.log('\n💼 System gotowy do przyjmowania rejestracji klientów!');
         console.log('🔗 Formularz rejestracji: https://mobilna-asystentka.onrender.com/login.html\n');
-        console.log('✅ PostgreSQL (Supabase) - dane są trwałe i nie znikną!');
+        console.log('✅ PostgreSQL (Railway) - dane są trwałe i nie znikną!');
 
         await pool.end();
-        process.exit(0);
-    } catch (error) {
-        console.error('❌ Błąd inicjalizacji bazy danych:', error);
-        process.exit(1);
-    }
-}
-
-initializeDatabase();
-            console.log('✅ Kolumna deactivated_at już istnieje');
-        } catch (e) {
-            console.log('📊 Dodano kolumnę deactivated_at');
-        }
-
-        // Tworzenie struktury archiwalnej na lata 2026-2040
-        console.log('\n📦 Inicjalizacja struktury archiwalnej 2026-2040...');
-        
-        // Tworzenie pustej struktury lat w archiwum (2026-2040)
-        const years = [];
-        for (let year = 2026; year <= 2040; year++) {
-            years.push(year);
-        }
-        
-        console.log(`✅ Struktura archiwalna przygotowana dla lat: ${years.join(', ')}`);
-        console.log('📅 Dane archiwalne będą automatycznie generowane po zakończeniu miesięcy');
-        console.log('🔒 Wszystkie archiwa są chronione i nie mogą być usunięte');
-        console.log('\n✨ NOWE FUNKCJE DOSTĘPNE:');
-        console.log('   • Task Manager (zadania dla klientów)');
-        console.log('   • Direct Chat (komunikacja admin ↔ klient)');
-        console.log('   • Faktury i rozliczenia');
-        console.log('   • Kalendarz współpracy');
-        console.log('   • System logów w czasie rzeczywistym');
-        console.log('   • Blokowanie Emergency na czas');
-        console.log('   • Archiwum miesięczne');
-        console.log('   • Memorium (dezaktywowani klienci)');
-        console.log('   • Wymiana Emergency na zasoby');
-        console.log('   • Menu kontekstowe (PPM)');
-
-        saveDatabase();
-
-        console.log('\n🎉 Baza danych została pomyślnie zainicjalizowana!');
-        console.log('📋 Dane logowania:');
-        console.log('   Admin: j.nowak0703 / Julka2001.');
-        console.log('\n💼 System gotowy do przyjmowania rejestracji klientów!');
-        console.log('🔗 Formularz rejestracji: http://localhost:3000/login.html\n');
-
         process.exit(0);
     } catch (error) {
         console.error('❌ Błąd inicjalizacji bazy danych:', error);

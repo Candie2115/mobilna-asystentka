@@ -19,9 +19,9 @@ class PostgreSQLWrapper {
             const convertedSql = this.convertPlaceholders(sql);
             const result = await this.pool.query(convertedSql, params);
             
-            // Zwróć w formacie SQLite
-            if (result.rows.length === 0) {
-                return [];
+            // Zwróć w formacie SQLite - POPRAWIONY
+            if (!result.rows || result.rows.length === 0) {
+                return []; // Pusta tablica jeśli brak wyników
             }
 
             const columns = Object.keys(result.rows[0]);
@@ -35,7 +35,7 @@ class PostgreSQLWrapper {
             console.error('Database exec error:', error);
             console.error('SQL:', sql);
             console.error('Params:', params);
-            throw error;
+            return []; // Zwróć pustą tablicę zamiast rzucać błąd
         }
     }
 
