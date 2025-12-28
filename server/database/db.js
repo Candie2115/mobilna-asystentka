@@ -2,9 +2,9 @@ const { Pool } = require('pg');
 const PostgreSQLWrapper = require('./db-wrapper');
 
 // Connection string z Supabase (będzie pobierany z .env)
-// Używamy Connection Pooler (port 6543) dla lepszej kompatybilności z Render
+// Używamy Transaction mode pooler dla Supabase
 const connectionString = process.env.DATABASE_URL || 
-    'postgresql://postgres.fppzabmjqnfspmxysgno:gOgkviqlCTtnON6Q@aws-0-eu-central-1.pooler.supabase.com:6543/postgres';
+    'postgresql://postgres:gOgkviqlCTtnON6Q@aws-0-eu-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1';
 
 let pool;
 let dbWrapper;
