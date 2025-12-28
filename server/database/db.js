@@ -1,44 +1,53 @@
-const initSqlJs = require('sql.js');
-const fs = require('fs');
-const path = require('path');
+const { Pool } = require('pg');
+const PostgreSQLWrapper = require('./db-wrapper');
 
-// Upewnij się że folder data istnieje
-const dataDir = path.join(__dirname, '../../data');
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-}
+// Connection string z Supabase (będzie pobierany z .env)
+const connectionString = process.env.DATABASE_URL || 
+    'postgresql://postgres:gOgkviqlCTtnON6Q@db.fppzabmjqnfspmxysgno.supabase.co:5432/postgres';
 
-const dbPath = path.join(dataDir, 'database.db');
-
-let db;
+let pool;
+let dbWrapper;
 
 async function initDatabase() {
-    const SQL = await initSqlJs();
-    
-    if (fs.existsSync(dbPath)) {
-        const buffer = fs.readFileSync(dbPath);
-        db = new SQL.Database(buffer);
-    } else {
-        db = new SQL.Database();
+    pool = new Pool({
+        connectionString: connectionString,
+        ssl: {
+            rejectUnauthorized: false // Wymagane dla Supabase
+        }
+    });
+
+    try {
+        const client = await pool.connect();
+        console.log('✅ Połączono z bazą danych PostgreSQL (Supabase)');
+        client.release();
+        
+        // Utwórz wrapper który emuluje SQLite API
+        dbWrapper = new PostgreSQLWrapper(pool);
+        
+        return pool;
+    } catch (error) {
+        console.error('❌ Błąd połączenia z bazą danych:', error);
+        throw error;
     }
-    
-    console.log('✅ Połączono z bazą danych SQLite:', dbPath);
-    return db;
 }
 
+// PostgreSQL nie wymaga manualnego zapisu - dane są zapisywane automatycznie
 function saveDatabase() {
-    if (db) {
-        const data = db.export();
-        const buffer = Buffer.from(data);
-        fs.writeFileSync(dbPath, buffer);
-    }
+    // Pusta funkcja dla kompatybilności z istniejącym kodem
+    // PostgreSQL zapisuje automatycznie po każdym query
 }
 
-// Zapisuj bazę przy zamykaniu procesu
-process.on('exit', saveDatabase);
+function getDb() {
+    return dbWrapper; // Zwracamy wrapper zamiast pool
+}
+
+// Zamknij połączenie przy wyłączaniu
+process.on('exit', () => {
+    if (pool) pool.end();
+});
 process.on('SIGINT', () => {
-    saveDatabase();
+    if (pool) pool.end();
     process.exit(0);
 });
 
-module.exports = { initDatabase, saveDatabase, getDb: () => db };
+module.exports = { initDatabase, saveDatabase, getDb };
