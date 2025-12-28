@@ -1,9 +1,9 @@
 const { Pool } = require('pg');
 const PostgreSQLWrapper = require('./db-wrapper');
 
-// Connection string z Supabase - DIRECT CONNECTION (nie pooler)
+// Connection string z Railway (będzie pobierany z .env)
 const connectionString = process.env.DATABASE_URL || 
-    'postgresql://postgres:gOgkviqlCTtnON6Q@db.fppzabmjqnfspmxysgno.supabase.co:5432/postgres';
+    'postgresql://postgres:DpOdUbLmIcMlqfkKeqpdAeGQJmpbWxRh@tramway.proxy.rlwy.net:38997/railway';
 
 let pool;
 let dbWrapper;
@@ -11,11 +11,8 @@ let dbWrapper;
 async function initDatabase() {
     pool = new Pool({
         connectionString: connectionString,
-        ssl: {
-            rejectUnauthorized: false
-        },
-        // Dodatkowe opcje dla stabilności
-        max: 3, // Maksymalnie 3 połączenia (Free tier limit)
+        ssl: false, // Railway nie wymaga SSL
+        max: 3,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 10000,
     });
